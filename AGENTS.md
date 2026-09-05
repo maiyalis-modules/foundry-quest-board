@@ -231,18 +231,27 @@ board it has.
   a window keeps the ordinary "name first, buttons on the end" header. The
   controls and the close button share the `.fqb-board__controls` wrapper so the
   overlay moves them as one cluster.
-- **The overlay's controls are positioned off measured Foundry UI, never
-  constants.** `clearTopUi()` measures `#scene-navigation` and `#ui-left` (with
-  older ids as fallbacks) and writes `--fqb-overlay-top` / `--fqb-overlay-left`.
-  It has to: the overlay sits *under* Foundry's chrome by design, so anything at
+- **The overlay's controls clear Foundry's UI by measurement over a floor.**
+  `clearTopUi()` measures `#scene-navigation` and `#scene-controls` / `#ui-left`
+  and writes `--fqb-overlay-top` / `--fqb-overlay-left`. It has to measure
+  something: the overlay sits *under* Foundry's chrome by design, so anything at
   the top covers the control bar rather than the reverse, and `#interface` spans
-  the full width *behind* the scene tools, so the title plaque starts underneath
-  them. Both are compared as viewport rectangles, so it does not matter where in
-  the DOM those elements live, and both are capped at a fraction of the area —
-  controls overlapping the navigation is a far better failure than controls
-  pushed off the screen. Scene navigation collapses and re-renders without
-  re-rendering this app, which is why `module.ts` re-measures on
-  `renderSceneNavigation`, `collapseSceneNavigation` and `canvasReady`.
+  the full width *behind* the scene tools, so the cluster starts underneath them.
+  Viewport rectangles are compared, so it does not matter where in the DOM those
+  elements live.
+  - **A candidate thicker than 20% of the playable area is disbelieved, not
+    clamped.** Those ids name *containers* in some builds, not the visible bars:
+    with crlngn-ui, `#ui-left` measures ~900px wide and `#scene-navigation`
+    ~500px tall, because each wraps a mostly-empty flyout. Clamping those to a
+    ceiling was the first attempt and it put the controls in the middle of the
+    map — a bad measurement has to be dropped.
+  - **`OVERLAY_CHROME_FLOOR` (top 40, left 100) is a floor, not a default.** A
+    plausible larger measurement wins; anything smaller is ignored. So the worst
+    case is the stock corner rather than a collision, and the two shapes measure
+    40/104 (crlngn-ui) and 44/100 (stock Foundry).
+  - Scene navigation collapses and re-renders without re-rendering this app,
+    which is why `module.ts` re-measures on `renderSceneNavigation`,
+    `collapseSceneNavigation` and `canvasReady`.
 - **Only the pinnable panel takes clicks in the overlay.** `.fqb-overlay` is
   `pointer-events: none` and the panel re-enables it. The frame, the transparent
   surround and the scrim all let clicks through to the map — otherwise the GM

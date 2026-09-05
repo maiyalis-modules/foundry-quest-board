@@ -101,14 +101,26 @@ const LEFT_UI = ["#ui-left", "#scene-controls", "#controls"] as const;
 const OVERLAY_CHROME_GAP_PX = 8;
 
 /**
- * Ceiling on the measured offset, as a fraction of the playable area's height.
+ * Where the controls sit when nothing smaller has been measured — Foundry's
+ * stock scene tabs and left tool column, near enough.
  *
- * A UI module that reports something enormous — a full-height panel matching one
- * of the selectors above, say — should not push the controls off the bottom of
- * the screen. Overlapping the navigation is a much better failure than being
- * unreachable.
+ * These are a **floor, not a default**: a plausible measurement larger than one
+ * of these wins, and anything smaller is ignored. The corner is the corner.
  */
-const OVERLAY_CHROME_MAX_FRACTION = 0.35;
+const OVERLAY_CHROME_FLOOR = { top: 40, left: 100 } as const;
+
+/**
+ * How thick an edge bar may be, as a fraction of the playable area, before it is
+ * disbelieved.
+ *
+ * The ids below name *containers* in some builds, not the visible bars: with
+ * crlngn-ui, `#ui-left` measures most of the width of the screen and
+ * `#scene-navigation` most of its height, because each wraps a flyout that is
+ * mostly empty space. Trusting those put the controls in the middle of the map.
+ * A real edge bar is thin, so anything that is not gets skipped and the floor
+ * above applies instead.
+ */
+const OVERLAY_CHROME_MAX_FRACTION = 0.2;
 
 export class BoardApp extends HandlebarsApplicationMixin(ApplicationV2) {
   /** Every open board window, keyed by board id. See the class note. */
@@ -315,27 +327,47 @@ export class BoardApp extends HandlebarsApplicationMixin(ApplicationV2) {
   private clearTopUi(root: HTMLElement, host: Element): void {
     const hostRect = host.getBoundingClientRect();
 
-    const clearance = (selectors: readonly string[], edge: "bottom" | "right"): number => {
-      let offset = 0;
+    /**
+     * How far in from `edge` the controls have to start to clear `selectors`.
+     *
+     * `limit` does double duty: a candidate thicker than it is not an edge bar
+     * and is skipped, and so is one whose far edge lands past it. Both are the
+     * same judgement — that a bar hugging the edge of the screen is thin — and
+     * both matter, because the ids name containers rather than bars in some
+     * builds. Never a clamp: a wrong measurement is dropped, not squeezed into
+     * range, which is how a mis-measured bar used to leave the controls sitting
+     * in the middle of the map.
+     */
+    const clearance = (
+      selectors: readonly string[],
+      edge: "bottom" | "right",
+      extent: number,
+      floor: number,
+    ): string => {
+      const limit = extent * OVERLAY_CHROME_MAX_FRACTION;
+      let offset = floor;
       for (const selector of selectors) {
         const element = document.querySelector(selector);
         if (!element) continue;
         const rect = element.getBoundingClientRect();
         // A collapsed or hidden bar measures zero and is nothing to clear.
         if (rect.width === 0 || rect.height === 0) continue;
+        const thickness = edge === "bottom" ? rect.height : rect.width;
         const from = edge === "bottom" ? rect.bottom - hostRect.top : rect.right - hostRect.left;
-        offset = Math.max(offset, from);
+        if (thickness > limit || from > limit) continue;
+        offset = Math.max(offset, from + OVERLAY_CHROME_GAP_PX);
       }
-      return offset;
+      return `${Math.round(offset)}px`;
     };
 
-    const cap = (offset: number, extent: number): string => {
-      const ceiling = extent * OVERLAY_CHROME_MAX_FRACTION;
-      return `${Math.round(Math.min(Math.max(offset, 0) + OVERLAY_CHROME_GAP_PX, ceiling))}px`;
-    };
-
-    root.style.setProperty("--fqb-overlay-top", cap(clearance(TOP_UI, "bottom"), hostRect.height));
-    root.style.setProperty("--fqb-overlay-left", cap(clearance(LEFT_UI, "right"), hostRect.width));
+    root.style.setProperty(
+      "--fqb-overlay-top",
+      clearance(TOP_UI, "bottom", hostRect.height, OVERLAY_CHROME_FLOOR.top),
+    );
+    root.style.setProperty(
+      "--fqb-overlay-left",
+      clearance(LEFT_UI, "right", hostRect.width, OVERLAY_CHROME_FLOOR.left),
+    );
   }
 
   /**
