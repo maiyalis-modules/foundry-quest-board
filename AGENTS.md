@@ -139,9 +139,16 @@ pinnable  the panel inside the frame — notice positions are % of THIS box
 
 They collapse to the same rectangle for a procedural style, so there is one
 structure rather than two. The art style's own CSS rule supplies the lot as
-custom properties: `--fqb-art-ratio` (and the `--fqb-art-width/height` that
-letterbox off it via `cqw`/`cqh` on the surface), plus the four `--fqb-pin-*`
-insets. **No JavaScript measures anything.**
+custom properties: `--fqb-art-ratio` and the four `--fqb-pin-*` insets.
+**No JavaScript measures anything.**
+
+How much of the surface the board may take is a separate pair, `--fqb-fill-w` /
+`--fqb-fill-h`, defaulting to 100 each. They are **bare numbers, not lengths**,
+so both kinds of style can consume them the way each needs: a procedural board
+takes them as a percentage of the surface, an art board multiplies them by `cq`
+units to letterbox inside the same box. That is what lets the overlay set the
+geometry once — 90 / 95, anchored to the bottom — without knowing which kind of
+board it has.
 
 - **Adding one is two CSS edits plus the const value and the string** — the
   "art boards" block in module.css spells it out. Getting the insets right is
@@ -209,6 +216,11 @@ insets. **No JavaScript measures anything.**
   one left in the default UI layer sits over the sidebar. Ginzzzu's portraits
   hang their layer in the same place; `z-index: 1` matches them, deliberately low
   so Foundry's navigation, controls and token HUD stay above the board.
+- **The overlay board stands on the bottom edge**, 90% of the playable area's
+  width and at most 95% of its height, aspect preserved. All the leftover height
+  goes above it — which is where the controls and the Arrange hint live, so
+  neither ever lies across the board. On a normal widescreen the width is what
+  binds, and the board comes out around 78% of the height.
 - **Only the pinnable panel takes clicks in the overlay.** `.fqb-overlay` is
   `pointer-events: none` and the panel re-enables it. The frame, the transparent
   surround and the scrim all let clicks through to the map — otherwise the GM

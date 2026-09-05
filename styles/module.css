@@ -359,15 +359,22 @@
 
 /*
  * Surface, art, pinnable — see the comment in `templates/board.hbs` for what
- * each box is. The whole arrangement is driven by four custom properties that a
- * board style may set, and which default here to "one rectangle, no inset":
+ * each box is. The whole arrangement is driven by custom properties that a board
+ * style, or a presentation, may set — and which default here to "one rectangle,
+ * filling everything, no inset":
  *
+ *   --fqb-fill-w      how much of the surface's width the board may use, 0-100
+ *   --fqb-fill-h      the same for its height
  *   --fqb-art-ratio   aspect ratio of the artwork (a bare number)
- *   --fqb-art-width   how wide the art box is inside the surface
- *   --fqb-art-height  how tall
  *   --fqb-pin-*       inset of the pinnable panel within the art
  *
- * A procedural style sets none of them and the three boxes coincide.
+ * The fills are bare numbers rather than lengths so both kinds of style can use
+ * them the way each needs to: a procedural board takes them as a percentage of
+ * the surface, an art board multiplies them by `cq` units to letterbox inside
+ * the same box. One pair of knobs, and the overlay sets them once (90 / 95)
+ * without knowing which kind of board it is showing.
+ *
+ * A procedural style in a window sets none of it and the three boxes coincide.
  */
 .fqb-board__surface {
   position: relative;
@@ -382,13 +389,15 @@
 }
 
 .fqb-board__art {
+  --fqb-fill-w: 100;
+  --fqb-fill-h: 100;
   position: relative;
   /* `margin: auto` rather than the surface centring its item: safe centring, so
      art taller than the window overflows evenly instead of having its top edge
      cut off and made unreachable. */
   margin: auto;
-  width: var(--fqb-art-width, 100%);
-  height: var(--fqb-art-height, 100%);
+  width: calc(var(--fqb-fill-w) * 1%);
+  height: calc(var(--fqb-fill-h) * 1%);
   aspect-ratio: var(--fqb-art-ratio, auto);
   background-position: center;
   background-repeat: no-repeat;
@@ -462,8 +471,7 @@
 /*
  * No wall, no vignette, no clipping: the artwork's own transparency is what
  * gives the board its shape here, and a rectangle behind it would throw that
- * away. The padding is what "most of the playable area" means — the board is
- * letterboxed inside what is left, with room at the foot for the controls.
+ * away.
  *
  * This beats a board style's own surface rule on specificity (0,2,0 against
  * 0,1,0), which is why the wall is on the surface and the texture is on the art.
@@ -472,10 +480,23 @@
   background: none;
   box-shadow: none;
   overflow: visible;
-  padding: 1% 3% 5%;
+  /* The board stands on the bottom edge of the playable area, the way a real one
+     stands on the ground — so all the leftover height goes above it, and the
+     controls at the top have somewhere to be that is not on top of the board. */
+  align-items: flex-end;
 }
 
+/*
+ * 90% of the width, 95% of the height — the board fills the playable area
+ * without touching its edges. Sizing is left to the board's own rule, which is
+ * why these are the `--fqb-fill-*` shares rather than a width and a height: an
+ * art board letterboxes inside this box and a procedural one fills it, and the
+ * overlay does not need to know which it has.
+ */
 .fqb-overlay .fqb-board__art {
+  --fqb-fill-w: 90;
+  --fqb-fill-h: 95;
+  margin: auto auto 0;
   filter: drop-shadow(0 10px 26px rgb(0 0 0 / 75%));
 }
 
@@ -543,10 +564,12 @@
   line-height: 28px;
 }
 
+/* Under the control bar, not at the foot of the screen: the board stands on the
+   bottom edge now, and a hint down there would be lying across it. */
 .fqb-overlay .fqb-board__hint {
   position: absolute;
+  top: 46px;
   right: 0;
-  bottom: 8px;
   left: 0;
   z-index: 2;
   margin: 0 auto;
@@ -596,10 +619,15 @@
 }
 
 .fqb-board--weathered1 .fqb-board__art {
-  /* Letterbox to the artwork: as wide as the surface allows, or as wide as the
-     surface's height permits at this ratio — whichever is smaller. */
-  --fqb-art-width: min(100cqw, calc(100cqh * var(--fqb-art-ratio)));
-  --fqb-art-height: auto;
+  /* Letterbox to the artwork: as wide as its share of the surface allows, or as
+     wide as its share of the surface's height permits at this ratio — whichever
+     is smaller. The shares are `--fqb-fill-*`, which the overlay presentation
+     turns down so the board does not touch the edges of the screen. */
+  width: min(
+    calc(var(--fqb-fill-w) * 1cqw),
+    calc(var(--fqb-fill-h) * 1cqh * var(--fqb-art-ratio))
+  );
+  height: auto;
   /* The box is already the artwork's exact ratio, so stretch rather than cover:
      `cover` would crop a sliver off the frame at some window sizes. */
   background-size: 100% 100%;
@@ -623,8 +651,8 @@
    letterboxing to somebody else's artwork, and the whole surface is pinnable
    again. Must come after the art rules — same specificity, source order wins. */
 .fqb-board--custom .fqb-board__art {
-  --fqb-art-width: 100%;
-  --fqb-art-height: 100%;
+  width: calc(var(--fqb-fill-w) * 1%);
+  height: calc(var(--fqb-fill-h) * 1%);
   --fqb-art-ratio: auto;
   --fqb-pin-top: 0;
   --fqb-pin-right: 0;
