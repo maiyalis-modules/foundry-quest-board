@@ -11,9 +11,24 @@
 /**
  * The surface a board's notices are pinned to. Each becomes a `fqb-board--*`
  * class in module.css and nothing more; a board with its own `background` image
- * keeps the style's frame and pins but replaces the texture behind them.
+ * replaces whatever the style put behind the notices.
+ *
+ * Two kinds live in here, and the difference is entirely a matter of CSS:
+ *
+ * - **Procedural styles** are layered gradients that fill whatever space the
+ *   window gives them. Notices may be pinned anywhere on the surface.
+ * - **Art styles** are a bundled illustration of an actual board, letterboxed to
+ *   its own aspect ratio, with a *pinnable area* — the plank panel inside the
+ *   frame — that notices are positioned against instead of the whole surface. A
+ *   notice at 50%/50% is in the middle of the panel, not floating over the roof.
+ *
+ * Both are declared the same way here, because neither is a code path: the
+ * aspect ratio and the pinnable inset are CSS custom properties on the style's
+ * own rule in module.css. See the "art boards" block there before adding one.
  */
 export const BOARD_STYLES = {
+  /** Art: a roofed, rope-lashed village board, mossy and long rained on. */
+  weathered1: "weathered1",
   /** Rough planks, rope and twine — a village noticeboard by the market. */
   rustic: "rustic",
   /** Framed, glazed and tidy: a municipal board with official postings. */
@@ -113,8 +128,17 @@ export interface Board {
   updatedAt: number;
 }
 
-/** Bounds a notice centre must stay inside, so it cannot be dragged off the board. */
-export const POSITION_BOUNDS = { min: 6, max: 94 } as const;
+/**
+ * Bounds a notice centre must stay inside, as a percentage of the pinnable area.
+ *
+ * These bound the notice's *centre*, so a wide notice parked at the limit still
+ * overhangs the edge — deliberately. A notice nailed half over the frame of a
+ * board is what a real one looks like, and clipping them to a crisp rectangle
+ * would look like a bug on an art board whose panel edge is neither crisp nor
+ * straight. The bounds exist to stop a notice being dragged somewhere it can
+ * never be grabbed again, not to keep it tidy.
+ */
+export const POSITION_BOUNDS = { min: 10, max: 90 } as const;
 /** Bounds on tilt. Beyond this a notice reads as fallen rather than pinned. */
 export const ROTATION_BOUNDS = { min: -20, max: 20 } as const;
 
@@ -137,6 +161,11 @@ export function clampRotation(value: number): number {
  * top corner". `index` walks a loose four-column grid so a run of new notices
  * spreads out instead of stacking, and the jitter comes off the notice id so two
  * notices landing in the same cell still differ.
+ *
+ * The columns sit well inside {@link POSITION_BOUNDS} on purpose: those bounds
+ * are the furthest a notice may be *dragged*, while this is where one should
+ * *land* — a medium notice dropped here sits fully on the panel of an art board
+ * rather than half over its frame.
  */
 export function scatter(index: number, seed: string): { x: number; y: number; rotation: number } {
   const columns = 4;
@@ -149,10 +178,10 @@ export function scatter(index: number, seed: string): { x: number; y: number; ro
   }
   const unit = (shift: number): number => (((hash >>> shift) & 0xff) / 255) * 2 - 1;
   return {
-    x: clampPosition(16 + column * 23 + unit(0) * 7),
+    x: clampPosition(20 + column * 20 + unit(0) * 5),
     // Rows wrap down the board and then start overlapping again, which is what a
     // busy board actually looks like.
-    y: clampPosition(20 + ((row * 26) % 68) + unit(8) * 6),
+    y: clampPosition(24 + ((row * 24) % 56) + unit(8) * 5),
     rotation: clampRotation(unit(16) * 7),
   };
 }

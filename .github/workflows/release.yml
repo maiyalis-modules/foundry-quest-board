@@ -55,6 +55,7 @@ jobs:
             styles \
             templates \
             packs \
+            assets \
             README.md
 
       - name: Create GitHub release

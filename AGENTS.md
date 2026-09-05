@@ -117,11 +117,55 @@ styles/ templates/ lang/   served from the repo root as-is
   (`fqb-board--*`, `fqb-notice--*`, `fqb-pin--*`). Adding one is an entry in the
   const object, a `FQB.BoardStyle.*` / `FQB.Template.*` / `FQB.Pin.*` string, and
   a rule in module.css — never a branch in `BoardApp`.
-- **No image assets.** Every texture is layered CSS gradients, so the module
-  downloads small and looks the same for a user with no art of their own. A GM
-  who *has* art sets it as a board background, which replaces the texture and
-  leaves the frame and pins alone. Don't add a `assets/` folder to solve a
-  styling problem that a gradient solves.
+- **Gradients first; artwork only for whole boards.** Every notice template and
+  every pin is layered CSS gradients and clip-paths, and must stay that way — a
+  new pin head is not worth a download. The one exception is a **board style
+  built on a bundled illustration** (`assets/boards/`), which is a thing you
+  genuinely cannot draw in CSS. Ship those as WebP; the source PNGs are
+  megabytes and this is a module people install.
+
+## Art boards
+
+An art board is an illustration of a real board — a frame, and a panel inside it
+that notices are pinned to. It is still just a `BOARD_STYLES` value and a CSS
+rule; `BoardApp` cannot tell one from a gradient. Three boxes make that work,
+and `templates/board.hbs` documents them:
+
+```
+surface   fills the window body; for an art style it is the wall behind
+art       the board; procedural fills the surface, art letterboxes to its ratio
+pinnable  the panel inside the frame — notice positions are % of THIS box
+```
+
+They collapse to the same rectangle for a procedural style, so there is one
+structure rather than two. The art style's own CSS rule supplies the lot as
+custom properties: `--fqb-art-ratio` (and the `--fqb-art-width/height` that
+letterbox off it via `cqw`/`cqh` on the surface), plus the four `--fqb-pin-*`
+insets. **No JavaScript measures anything.**
+
+- **Adding one is two CSS edits plus the const value and the string** — the
+  "art boards" block in module.css spells it out. Getting the insets right is
+  the whole job: measure the panel in the file, divide by the file's dimensions,
+  then pull each edge in slightly.
+- **`tools/board-preview.html` is how you check them** without launching
+  Foundry — a static copy of the board markup against the real stylesheet, with
+  a headless-screenshot one-liner in its header comment. It renders the wide,
+  narrow, procedural and custom-background cases side by side, which is exactly
+  the set that catches a bad inset.
+- **Notices scale with the board, not with the window.** They are sized in
+  `cqw` against `.fqb-board__pinnable` (clamped at both ends), because the board
+  is a picture you step closer to — a notice fixed at 185px while the board
+  doubled would read as a sticker on a photograph. Padding inside a notice is in
+  `em`, **never a percentage**: percentage padding resolves against the
+  containing block, so it scaled with the panel and left a small notice as
+  almost pure margin.
+- **A custom `background` image wins over all of it.** `fqb-board--custom` on
+  the surface resets the ratio and the insets, so a GM's own art fills the
+  surface edge to edge and the whole thing is pinnable again. It must stay last
+  among those rules — same specificity, source order decides.
+- **Positions survive a style change.** They are percentages of the pinnable
+  box, so switching a board from gradient to art keeps the arrangement and just
+  confines it to the panel. There is no migration to write.
 
 ## Showing a board
 

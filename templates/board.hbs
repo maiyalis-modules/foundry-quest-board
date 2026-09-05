@@ -56,8 +56,23 @@
       <p class="fqb-board__hint">{{localize "FQB.Board.ArrangeHint"}}</p>
     {{/if}}
 
-    <div class="fqb-board__surface {{boardClass}}"
-         {{#if background}}style="background-image: url('{{background}}');"{{/if}}>
+    {{!-- Three nested boxes, and each one earns its place:
+
+           surface   fills the window body. For an art style it is the wall the
+                     board hangs on, and the art is letterboxed inside it.
+           art       the board itself. A procedural style fills the surface; an
+                     art style takes its own aspect ratio, centred.
+           pinnable  the part of the board you can actually pin to — the plank
+                     panel inside the frame. Notice positions are percentages of
+                     THIS box, which is what keeps a notice off the roof.
+
+         All three collapse to the same rectangle for a procedural style, so
+         there is one structure rather than two. The insets come from CSS custom
+         properties on the style's own rule; see module.css. --}}
+    <div class="fqb-board__surface {{boardClass}} {{#if background}}fqb-board--custom{{/if}}">
+      <div class="fqb-board__art"
+           {{#if background}}style="background-image: url('{{background}}');"{{/if}}>
+        <div class="fqb-board__pinnable">
 
       {{#if empty}}
         <p class="fqb-board__empty">{{localize emptyMessage}}</p>
@@ -131,6 +146,8 @@
         </article>
       {{/each}}
 
+        </div>
+      </div>
     </div>
 
   {{/if}}

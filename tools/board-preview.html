@@ -1,0 +1,176 @@
+<!doctype html>
+<!--
+  Board preview harness — a development tool, not part of the module.
+
+  A static copy of what `templates/board.hbs` renders, against the real
+  `styles/module.css`, so board styles can be worked on without launching
+  Foundry. It exists mainly for **measuring the pinnable insets of a new art
+  board**: put the artwork in `assets/boards/`, give it a rule in module.css,
+  point a panel here at it, and look at whether the notices land on the panel.
+
+  Open it in any browser, or screenshot every panel headlessly:
+
+    docker run --rm -v "d:/Foundry/foundry-quest-board:/app" -w /home/pptruser \
+      --entrypoint sh ghcr.io/puppeteer/puppeteer:23.11.1 -c '
+        cat > s.cjs <<EOF
+        const puppeteer = require("puppeteer");
+        (async () => {
+          const b = await puppeteer.launch({args:["--no-sandbox","--allow-file-access-from-files"]});
+          const p = await b.newPage();
+          await p.setViewport({width: 960, height: 2600});
+          await p.goto("file:///app/tools/board-preview.html", {waitUntil: "networkidle0"});
+          for (const id of ["wide","narrow","proc","custom"])
+            await (await p.$("#"+id)).screenshot({path: "/app/tools/shot-"+id+".png"});
+          await b.close();
+        })();
+        EOF
+        node s.cjs'
+
+  The markup below is a hand copy and will drift from `board.hbs` eventually.
+  It is only ever a styling aid — trust the real template for behaviour.
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles/module.css">
+<style>
+  /* Stand-ins for the Foundry chrome the board normally sits in. */
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #1b1b1f; font-family: sans-serif; color: #eee; }
+  .win { width: 900px; height: 620px; display: flex; flex-direction: column;
+         border: 1px solid #000; }
+  .window-content { flex: 1; min-height: 0; padding: 0; overflow: hidden;
+                    display: flex; flex-direction: column; }
+  .fqb-board__bar button { background: #222; color: #ddd; border: 1px solid #555;
+                           border-radius: 3px; height: 26px; }
+  .narrow { width: 520px; height: 620px; }
+</style>
+</head>
+<body>
+
+<div class="win" id="wide">
+  <div class="window-content">
+    <div class="fqb-board">
+      <header class="fqb-board__bar">
+        <div class="fqb-board__titles">
+          <span class="fqb-board__name">Sky-Bough Village Notice Board</span>
+          <span class="fqb-board__subtitle">Posted by order of the Reeve</span>
+        </div>
+        <div class="fqb-board__tools">
+          <button type="button">Arrange</button>
+          <button type="button">Pin Notice</button>
+          <button type="button">Show Table</button>
+        </div>
+      </header>
+      <div class="fqb-board__surface fqb-board--weathered1">
+        <div class="fqb-board__art">
+          <div class="fqb-board__pinnable">
+
+            <article class="fqb-notice fqb-notice--wanted fqb-pin--nail fqb-size--medium"
+                     style="left:20%; top:26%; --fqb-rotation:-4deg; z-index:1;">
+              <span class="fqb-notice__fastener"></span>
+              <h2 class="fqb-notice__title">Wanted: Ogre</h2>
+              <p class="fqb-notice__excerpt">Seen at Coldbeck Ford. Took two oxen and the miller's gate.</p>
+              <p class="fqb-notice__reward">100 gold</p>
+            </article>
+
+            <article class="fqb-notice fqb-notice--note fqb-pin--pin fqb-size--small"
+                     style="left:42%; top:22%; --fqb-rotation:5deg; z-index:2;">
+              <span class="fqb-notice__fastener"></span>
+              <h2 class="fqb-notice__title">Missing Cat</h2>
+              <p class="fqb-notice__excerpt">Grey, one ear. Ask for Mara at the well.</p>
+              <p class="fqb-notice__posted-by">Posted by Mara</p>
+            </article>
+
+            <article class="fqb-notice fqb-notice--parchment fqb-pin--wax fqb-size--medium"
+                     style="left:64%; top:28%; --fqb-rotation:-2deg; z-index:3;">
+              <span class="fqb-notice__fastener"></span>
+              <h2 class="fqb-notice__title">Caravan Guards</h2>
+              <p class="fqb-notice__excerpt">Four needed for the Goldhorn run. Leave at first light, three days out.</p>
+              <p class="fqb-notice__reward">8s a day</p>
+            </article>
+
+            <article class="fqb-notice fqb-notice--official fqb-pin--tape fqb-size--medium"
+                     style="left:80%; top:24%; --fqb-rotation:3deg; z-index:4;">
+              <span class="fqb-notice__fastener"></span>
+              <h2 class="fqb-notice__title">Curfew</h2>
+              <p class="fqb-notice__excerpt">No fires past the second bell by order of the Reeve.</p>
+            </article>
+
+            <article class="fqb-notice fqb-notice--napkin fqb-pin--pin fqb-size--small"
+                     style="left:30%; top:64%; --fqb-rotation:-7deg; z-index:5;">
+              <span class="fqb-notice__fastener"></span>
+              <p class="fqb-notice__excerpt">they say the well talks back on midwinter — ask the smith, he heard it</p>
+            </article>
+
+            <article class="fqb-notice fqb-notice--flyer fqb-pin--nail fqb-size--large fqb-notice--unrevealed"
+                     style="left:62%; top:68%; --fqb-rotation:2deg; z-index:6;">
+              <span class="fqb-notice__fastener"></span>
+              <span class="fqb-notice__badge">Not revealed</span>
+              <h2 class="fqb-notice__title">Odd Jobs</h2>
+              <p class="fqb-notice__excerpt">Roof, fence, and the thing in the cellar. Enquire within, and bring a lamp.</p>
+              <p class="fqb-notice__posted-by">Posted by The Bent Feather</p>
+              <i class="fqb-notice__link-mark">L</i>
+            </article>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="win narrow" id="narrow">
+  <div class="window-content">
+    <div class="fqb-board">
+      <header class="fqb-board__bar">
+        <div class="fqb-board__titles"><span class="fqb-board__name">Narrow window</span></div>
+      </header>
+      <div class="fqb-board__surface fqb-board--weathered1">
+        <div class="fqb-board__art">
+          <div class="fqb-board__pinnable">
+            <article class="fqb-notice fqb-notice--parchment fqb-pin--pin fqb-size--medium"
+                     style="left:20%; top:25%; --fqb-rotation:-4deg;">
+              <span class="fqb-notice__fastener"></span>
+              <h2 class="fqb-notice__title">Top left</h2>
+              <p class="fqb-notice__excerpt">Should sit on the planks.</p>
+            </article>
+            <article class="fqb-notice fqb-notice--parchment fqb-pin--pin fqb-size--medium"
+                     style="left:80%; top:75%; --fqb-rotation:4deg;">
+              <span class="fqb-notice__fastener"></span>
+              <h2 class="fqb-notice__title">Bottom right</h2>
+              <p class="fqb-notice__excerpt">Should sit on the planks.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="win narrow" id="proc">
+  <div class="window-content">
+    <div class="fqb-board">
+      <header class="fqb-board__bar"><div class="fqb-board__titles"><span class="fqb-board__name">Procedural: rustic</span></div></header>
+      <div class="fqb-board__surface fqb-board--rustic"><div class="fqb-board__art"><div class="fqb-board__pinnable">
+        <article class="fqb-notice fqb-notice--parchment fqb-pin--pin fqb-size--medium" style="left:25%; top:30%; --fqb-rotation:-3deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Edge to edge</h2><p class="fqb-notice__excerpt">The whole surface is pinnable.</p></article>
+        <article class="fqb-notice fqb-notice--flyer fqb-pin--tape fqb-size--small" style="left:75%; top:70%; --fqb-rotation:4deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Corner</h2><p class="fqb-notice__excerpt">No letterbox here.</p></article>
+      </div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="win narrow" id="custom">
+  <div class="window-content">
+    <div class="fqb-board">
+      <header class="fqb-board__bar"><div class="fqb-board__titles"><span class="fqb-board__name">Custom background</span></div></header>
+      <div class="fqb-board__surface fqb-board--weathered1 fqb-board--custom"><div class="fqb-board__art" style="background-image: url(../assets/boards/weathered-board-1.webp);"><div class="fqb-board__pinnable">
+        <article class="fqb-notice fqb-notice--parchment fqb-pin--pin fqb-size--medium" style="left:20%; top:20%; --fqb-rotation:-3deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Own art</h2><p class="fqb-notice__excerpt">Fills the surface, no insets.</p></article>
+        <article class="fqb-notice fqb-notice--note fqb-pin--pin fqb-size--small" style="left:80%; top:80%; --fqb-rotation:4deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Far corner</h2><p class="fqb-notice__excerpt">Reachable.</p></article>
+      </div></div></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

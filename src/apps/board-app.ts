@@ -244,10 +244,14 @@ export class BoardApp extends HandlebarsApplicationMixin(ApplicationV2) {
     if (!element || !root.contains(element)) return;
     const noticeId = element.dataset["noticeId"] ?? "";
     const notice = BoardStore.get(this.boardId)?.notices.find((item) => item.id === noticeId);
-    const surface = root.querySelector<HTMLElement>(".fqb-board__surface");
-    if (!notice || !surface) return;
+    // The pinnable panel, not the whole surface: on an art board those are
+    // different boxes, and a notice's stored position is a percentage of this
+    // one (see `templates/board.hbs`). Measuring the surface here would make the
+    // notice drift away from the pointer the further it travelled.
+    const panel = root.querySelector<HTMLElement>(".fqb-board__pinnable");
+    if (!notice || !panel) return;
 
-    const rect = surface.getBoundingClientRect();
+    const rect = panel.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return;
 
     event.preventDefault();

@@ -50,7 +50,7 @@ export function registerSettings(): void {
     choices: Object.fromEntries(
       Object.values(BOARD_STYLES).map((style) => [style, `FQB.BoardStyle.${style}`]),
     ),
-    default: BOARD_STYLES.rustic,
+    default: BOARD_STYLES.weathered1,
   });
 
   // What a newly pinned notice is printed on.

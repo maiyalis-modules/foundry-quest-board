@@ -13,11 +13,13 @@
  * `src/models/board.ts`): each is one value in a const object and one rule in
  * this file. Adding a new one should never mean touching a `.ts`.
  *
- * There are no image assets in this module. Every texture here is built out of
- * layered CSS gradients, which keeps the download small and means a board looks
- * the same whether or not a user has their own art — and a GM who *does* have
- * art drops it in as a board background, which replaces the texture and leaves
- * the frame and the pins alone.
+ * Board styles come in two kinds. **Procedural** ones are layered CSS gradients
+ * — no download, and they fill whatever space the window gives them. **Art**
+ * ones are a bundled illustration in `assets/boards/`, letterboxed to their own
+ * aspect ratio with the notices confined to the panel inside the frame; see the
+ * "art boards" block for how to add one. Everything else here — every notice
+ * template, every pin — is gradients and clip-paths, and should stay that way:
+ * a new pin head is not worth a download.
  *
  * Foundry live-applies changes to this file with no page refresh, so it is the
  * fastest thing in the module to iterate on.
@@ -184,7 +186,15 @@
 }
 
 /* Board-style swatches in the library: the same gradients as the boards
-   themselves, shrunk. A row should look like the board it opens. */
+   themselves, shrunk — and for an art board, the artwork itself. A row should
+   look like the board it opens. */
+.fqb-swatch--weathered1 {
+  background-color: #16120f;
+  background-image: url("../assets/boards/weathered-board-1.webp");
+  background-size: 132%;
+  background-position: center 42%;
+}
+
 .fqb-swatch--rustic { background-color: #6b4a2c; background-image: repeating-linear-gradient(90deg, rgb(0 0 0 / 22%) 0 1px, transparent 1px 11px); }
 .fqb-swatch--civic { background-color: #3f4b57; background-image: linear-gradient(160deg, rgb(255 255 255 / 18%), transparent 60%); }
 .fqb-swatch--guild { background-color: #33241c; background-image: repeating-linear-gradient(90deg, rgb(0 0 0 / 30%) 0 1px, transparent 1px 9px); }
@@ -269,6 +279,11 @@
 .fqb-board {
   display: flex;
   flex-direction: column;
+  /* Both, explicitly: `.window-content` is a flex container in Foundry's own
+     CSS, and this is its only item. Relying on the cross-axis stretch means the
+     board collapses to its content width the moment anything upstream changes
+     the flex direction. */
+  width: 100%;
   height: 100%;
   min-height: 320px;
 }
@@ -341,17 +356,56 @@
   text-align: center;
 }
 
-/* The surface itself. Notices are positioned against this box in percentages,
-   so it has to be the positioning context and it has to clip — a notice dragged
-   to the edge should meet the frame, not spill into the window chrome. */
+/*
+ * Surface, art, pinnable — see the comment in `templates/board.hbs` for what
+ * each box is. The whole arrangement is driven by four custom properties that a
+ * board style may set, and which default here to "one rectangle, no inset":
+ *
+ *   --fqb-art-ratio   aspect ratio of the artwork (a bare number)
+ *   --fqb-art-width   how wide the art box is inside the surface
+ *   --fqb-art-height  how tall
+ *   --fqb-pin-*       inset of the pinnable panel within the art
+ *
+ * A procedural style sets none of them and the three boxes coincide.
+ */
 .fqb-board__surface {
   position: relative;
+  display: flex;
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  background-size: cover;
-  background-position: center;
+  /* Makes cqw/cqh below resolve against this box, which is how an art board
+     letterboxes itself with no JavaScript measuring anything. */
+  container-type: size;
   box-shadow: inset 0 0 60px rgb(0 0 0 / 55%);
+}
+
+.fqb-board__art {
+  position: relative;
+  /* `margin: auto` rather than the surface centring its item: safe centring, so
+     art taller than the window overflows evenly instead of having its top edge
+     cut off and made unreachable. */
+  margin: auto;
+  width: var(--fqb-art-width, 100%);
+  height: var(--fqb-art-height, 100%);
+  aspect-ratio: var(--fqb-art-ratio, auto);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.fqb-board__pinnable {
+  position: absolute;
+  inset:
+    var(--fqb-pin-top, 0)
+    var(--fqb-pin-right, 0)
+    var(--fqb-pin-bottom, 0)
+    var(--fqb-pin-left, 0);
+  /* Notices size themselves in `cqw` against this box — see the note above
+     `.fqb-notice`. It has to be a *size* container, not inline-size: the panel's
+     height is what letterboxes an art board, and a notice that ignored it would
+     scale off the end of a short, wide window. */
+  container-type: size;
 }
 
 .fqb-board__empty {
@@ -364,9 +418,83 @@
   background: rgb(0 0 0 / 45%);
   color: rgb(255 255 255 / 80%);
   font-style: italic;
+  white-space: nowrap;
 }
 
-/* ----------------------------------------------------------- board styles -- */
+/* ------------------------------------------------------------- art boards -- */
+
+/*
+ * A bundled illustration of an actual board, letterboxed inside the surface with
+ * its notices confined to the panel inside its frame.
+ *
+ * ADDING ONE is two edits, both here:
+ *   1. Put the file in `assets/boards/` (WebP — the source PNGs are several MB
+ *      and this is a module people download).
+ *   2. Add its class to the shared selector list below, then give it a rule with
+ *      its image, its `--fqb-art-ratio` (width ÷ height of the file), and its
+ *      four `--fqb-pin-*` insets — where the pinnable panel sits inside the
+ *      artwork, measured off the file as a percentage.
+ * …plus the value in `BOARD_STYLES` and the `FQB.BoardStyle.*` string. There is
+ * no TypeScript to write: `BoardApp` never knows an art board from a gradient.
+ *
+ * Getting the insets right is the whole job. Too tight and the panel wastes
+ * space; too loose and notices land on the roof. Measure the panel in pixels,
+ * divide by the file's dimensions, and pull each edge in a little further —
+ * notices are positioned by their centre and are meant to overhang the frame
+ * slightly (see POSITION_BOUNDS in src/models/board.ts).
+ */
+
+/* Shared by every art board — ADD A NEW ONE TO BOTH OF THESE SELECTOR LISTS. */
+
+.fqb-board--weathered1 {
+  /* The wall behind the board. Every one of these illustrations is a cut-out
+     with real transparency around it, so something has to be back there or the
+     window's own background shows through. */
+  background:
+    radial-gradient(ellipse at 50% 25%, #2f2823 0%, #16120f 70%),
+    #14110e;
+}
+
+.fqb-board--weathered1 .fqb-board__art {
+  /* Letterbox to the artwork: as wide as the surface allows, or as wide as the
+     surface's height permits at this ratio — whichever is smaller. */
+  --fqb-art-width: min(100cqw, calc(100cqh * var(--fqb-art-ratio)));
+  --fqb-art-height: auto;
+  /* The box is already the artwork's exact ratio, so stretch rather than cover:
+     `cover` would crop a sliver off the frame at some window sizes. */
+  background-size: 100% 100%;
+  filter: drop-shadow(0 6px 14px rgb(0 0 0 / 70%));
+}
+
+/* Per-board: the file, its ratio, and where its panel sits inside it. */
+
+.fqb-board--weathered1 .fqb-board__art {
+  /* weathered-board-1.webp is 1672 × 941. */
+  --fqb-art-ratio: 1.7768;
+  /* Panel: x 285-1390, y 200-710 of those dimensions. */
+  --fqb-pin-top: 21.3%;
+  --fqb-pin-right: 17%;
+  --fqb-pin-bottom: 24.5%;
+  --fqb-pin-left: 17%;
+  background-image: url("../assets/boards/weathered-board-1.webp");
+}
+
+/* A board given its own background image is that image, edge to edge: no
+   letterboxing to somebody else's artwork, and the whole surface is pinnable
+   again. Must come after the art rules — same specificity, source order wins. */
+.fqb-board--custom .fqb-board__art {
+  --fqb-art-width: 100%;
+  --fqb-art-height: 100%;
+  --fqb-art-ratio: auto;
+  --fqb-pin-top: 0;
+  --fqb-pin-right: 0;
+  --fqb-pin-bottom: 0;
+  --fqb-pin-left: 0;
+  background-size: cover;
+  filter: none;
+}
+
+/* ----------------------------------------------------- procedural styles -- */
 
 /* Rough sawn planks, run vertically, with a darker rail top and bottom. */
 .fqb-board--rustic {
@@ -428,12 +556,30 @@
  * alongside the tilt. `--fqb-rotation` is set inline per notice, and by the
  * drag handler during a wheel-rotate.
  */
+/*
+ * A notice is sized as a **fraction of the board it is pinned to**, not in fixed
+ * pixels. The board is a picture you are standing in front of: when the window
+ * grows, you have stepped closer, and a notice that stayed 185px wide while the
+ * board doubled would read as a sticker floating over a photograph. It also
+ * keeps a stored position meaningful — a notice pinned beside another one stays
+ * beside it at every window size.
+ *
+ * Hence `cqw` against `.fqb-board__pinnable`, clamped at both ends: the floor
+ * keeps a notice legible on a small window, the ceiling stops one becoming a
+ * poster on a maximised one.
+ *
+ * Padding is in `em`, NOT a percentage. Percentage padding resolves against the
+ * containing block — the panel — not the element's own width, so a percentage
+ * here scaled the margins with the *board* and left a small notice almost
+ * entirely border. `em` follows the font size, which is already scaling.
+ */
 .fqb-notice {
   position: absolute;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 12px 12px 10px;
+  box-sizing: border-box;
+  gap: 0.35em;
+  padding: 0.9em 1em 0.8em;
   transform: translate(-50%, -50%) rotate(var(--fqb-rotation, 0deg));
   transform-origin: center;
   color: #2b2118;
@@ -451,9 +597,20 @@
   z-index: 500 !important;
 }
 
-.fqb-size--small { width: 145px; font-size: 11px; }
-.fqb-size--medium { width: 185px; font-size: 12px; }
-.fqb-size--large { width: 240px; font-size: 13px; }
+.fqb-size--small {
+  width: clamp(84px, 17cqw, 190px);
+  font-size: clamp(7px, 1.9cqw, 12px);
+}
+
+.fqb-size--medium {
+  width: clamp(105px, 23cqw, 250px);
+  font-size: clamp(8px, 2.4cqw, 14px);
+}
+
+.fqb-size--large {
+  width: clamp(135px, 31cqw, 330px);
+  font-size: clamp(9px, 3cqw, 16px);
+}
 
 .fqb-notice__image {
   overflow: hidden;
@@ -464,7 +621,10 @@
 .fqb-notice__image img {
   display: block;
   width: 100%;
-  height: 88px;
+  /* A ratio rather than a height, so the image well scales with the notice
+     instead of eating the whole card on a small board. */
+  aspect-ratio: 4 / 3;
+  height: auto;
   border: none;
   object-fit: cover;
   /* Old ink and older paper: a modern photograph pinned to a plank board is the

@@ -14,9 +14,10 @@ System-agnostic — it touches no system data at all.
   Crossing Job Board, the Adventurers' Guild, the Bent Feather, the Valtiron
   Bounty Office — each with its own notices, opened when the party is standing in
   front of it.
-- **Boards that look like the place they're in.** Six surfaces: rustic planks,
-  a glazed civic frame, a dark guild wall, a smoke-stained tavern, camp canvas,
-  or plain, for a board that is entirely your own background image.
+- **Boards that look like the place they are in.** An illustrated *Weathered
+  Board* whose notices hang on the planks inside its frame, five drawn-in-CSS
+  surfaces (rustic planks, a glazed civic frame, a dark guild wall, a
+  smoke-stained tavern, camp canvas), or your own image filling the whole board.
 - **Notices on real stock.** Parchment, wanted poster, torn note, printed flyer,
   official posting, napkin scrawl — each with an optional image, a reward and a
   "posted by", held up with a pin, a nail, a strip of tape or a wax seal.
@@ -108,9 +109,11 @@ While a world is running, Foundry live-applies changes with **no page refresh** 
 **JavaScript is not hot-swapped.** After `watch` rebuilds `dist/module.js` from a
 TypeScript change, **refresh the browser (F5)** to load it.
 
-Almost all of this module's look lives in `styles/module.css` — every board
-style, notice template and pin is a CSS rule, and there are no image assets — so
-most visual work needs no rebuild at all.
+Almost all of this module's look lives in `styles/module.css` — every notice
+template, every pin and most board styles are pure CSS — so most visual work
+needs no rebuild at all. `tools/board-preview.html` renders the board against the
+real stylesheet in a plain browser, which is the quick way to work on a style
+(and to measure where the notices should sit on a new illustrated board).
 
 ## Releasing
 
@@ -139,7 +142,9 @@ foundry-quest-board/
   dist/module.js         # build output (git-ignored)
   styles/module.css      # stylesheet — every board style and notice template
   templates/             # Handlebars templates
+  assets/boards/         # artwork for the illustrated board styles (WebP)
   lang/en.json           # localization strings
+  tools/                 # board-preview.html — a styling harness, not shipped
   docker-compose.yml     # containerized build toolchain
 ```
 

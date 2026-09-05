@@ -14,3 +14,6 @@ Thumbs.db
 # Env
 .env
 .env.local
+
+# Screenshots from tools/board-preview.html
+tools/shot-*.png
