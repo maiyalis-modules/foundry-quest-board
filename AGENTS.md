@@ -188,10 +188,35 @@ insets. **No JavaScript measures anything.**
   nothing for the player who had closed it — which reads at the table as a broken
   button. `syncDisplay` tracks the last revision it acted on so unrelated writes
   don't re-raise a board someone deliberately closed.
-- **Boards are windows, not an overlay.** The slideshow's stage covers the
-  viewport because a slideshow is watched; a board is *browsed*, and players want
-  to shove it aside, look at the map, and come back. `BoardApp` instances are
-  keyed by board id in a static map so two towns' boards can be open at once.
+- **Two presentations, one app.** `BoardApp` takes a `Presentation`:
+  - `window` — a framed, resizable Foundry window. What opening a board yourself
+    gives you. A board you are building, or reading on your own while the scene
+    carries on, should be movable and should not take the table hostage.
+  - `overlay` — frameless, covering the playable area, the board floating over
+    the live canvas. What Show Table produces, for everyone including the GM.
+
+  `open()` closes and reopens a board that is already up in the *other*
+  presentation, which is how the GM's own window follows the table the moment
+  they press Show Table. Instances are keyed by board id in a static map, so two
+  towns' boards can be open at once — and `close()` only evicts itself from that
+  map (`get(id) === this`), or a presentation swap whose close had to await a
+  pending rotation would evict its own replacement.
+- **The overlay is mounted into `#interface`, not pinned to the viewport.** That
+  element is already the box Foundry lays the canvas out in, so `inset: 0` means
+  "the playable area" with no hard-coded sidebar or control-bar widths, and a UI
+  module that moves them moves the board too. `mountOverlay()` re-asserts the
+  parent on every render, because a re-render can hand back a fresh element and
+  one left in the default UI layer sits over the sidebar. Ginzzzu's portraits
+  hang their layer in the same place; `z-index: 1` matches them, deliberately low
+  so Foundry's navigation, controls and token HUD stay above the board.
+- **Only the pinnable panel takes clicks in the overlay.** `.fqb-overlay` is
+  `pointer-events: none` and the panel re-enables it. The frame, the transparent
+  surround and the scrim all let clicks through to the map — otherwise the GM
+  could not touch the canvas without taking the board down. Notices live inside
+  the panel, so every one of them stays clickable.
+- **A texture belongs on `.fqb-board__art`, never on the surface.** The surface
+  is the wall the board hangs on; the overlay drops it so the canvas shows
+  through, and anything painted there would be dropped with it.
 - **Hidden means not rendered, not encrypted.** A notice with `hidden: true` is
   filtered out of a player's context in `BoardApp._prepareContext`, so it never
   reaches their DOM — do not "hide" a notice in CSS, a player can read their own

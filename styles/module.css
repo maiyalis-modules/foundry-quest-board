@@ -277,6 +277,7 @@
 }
 
 .fqb-board {
+  position: relative;
   display: flex;
   flex-direction: column;
   /* Both, explicitly: `.window-content` is a flex container in Foundry's own
@@ -421,6 +422,145 @@
   white-space: nowrap;
 }
 
+/* ---------------------------------------------------------------- overlay -- */
+
+/*
+ * The board as the table sees it: no window, hanging in the playable area over
+ * the live canvas.
+ *
+ * `apps/board-app.ts` moves this element into `#interface`, so `inset: 0` here
+ * already means "the box Foundry lays the canvas out in" — the sidebar and the
+ * scene controls are outside it without a single hard-coded width, and a UI
+ * module that moves them moves this with them.
+ *
+ * `z-index: 1` matches what Ginzzzu's portraits use, and is deliberately low:
+ * Foundry's own scene navigation, controls and token HUD stay above the board
+ * rather than being swallowed by it. The GM keeps their tools.
+ */
+.fqb-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  /* Everything except the board itself and its controls lets clicks through, so
+     the map around a board is still the map. Re-enabled piecemeal below. */
+  pointer-events: none;
+}
+
+.fqb-overlay .fqb-board {
+  min-height: 0;
+}
+
+/* Dims the canvas enough to say "look at this" without boxing the artwork in.
+   Never takes a click. */
+.fqb-overlay .fqb-board__scrim {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 45%, rgb(0 0 0 / 30%), rgb(0 0 0 / 62%));
+  pointer-events: none;
+}
+
+/*
+ * No wall, no vignette, no clipping: the artwork's own transparency is what
+ * gives the board its shape here, and a rectangle behind it would throw that
+ * away. The padding is what "most of the playable area" means — the board is
+ * letterboxed inside what is left, with room at the foot for the controls.
+ *
+ * This beats a board style's own surface rule on specificity (0,2,0 against
+ * 0,1,0), which is why the wall is on the surface and the texture is on the art.
+ */
+.fqb-overlay .fqb-board__surface {
+  background: none;
+  box-shadow: none;
+  overflow: visible;
+  padding: 1% 3% 5%;
+}
+
+.fqb-overlay .fqb-board__art {
+  filter: drop-shadow(0 10px 26px rgb(0 0 0 / 75%));
+}
+
+/*
+ * Only the panel takes clicks — not the frame, not the transparent surround.
+ *
+ * The alternative is the art's whole rectangle swallowing every click, which
+ * would mean the GM cannot touch the map at all without taking the board down.
+ * Notices live inside this box, so all of them stay clickable, and the wood
+ * around them is scenery.
+ */
+.fqb-overlay .fqb-board__pinnable {
+  pointer-events: auto;
+}
+
+/* The bar stops being a header and becomes two floating clusters: the board's
+   name at the top left of the area, the GM's controls at the top right. Both
+   need their own background — they are sitting over a map, not over a panel. */
+.fqb-overlay .fqb-board__bar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 2;
+  align-items: flex-start;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+}
+
+.fqb-overlay .fqb-board__titles,
+.fqb-overlay .fqb-board__tools,
+.fqb-overlay .fqb-board__close {
+  pointer-events: auto;
+}
+
+/* Title left, controls right — `margin-left: auto` on the tools rather than a
+   spacer element, so the bar's markup is the same in both presentations. */
+.fqb-overlay .fqb-board__titles {
+  flex: 0 1 auto;
+  padding: 4px 12px;
+  border-radius: 4px;
+  background: rgb(12 10 8 / 72%);
+  text-shadow: 0 1px 3px rgb(0 0 0 / 80%);
+}
+
+.fqb-overlay .fqb-board__tools {
+  margin-left: auto;
+  padding: 3px;
+  border-radius: 4px;
+  background: rgb(12 10 8 / 72%);
+}
+
+.fqb-overlay .fqb-board__name {
+  font-size: var(--font-size-20, 20px);
+}
+
+.fqb-overlay .fqb-board__close {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 4px;
+  background: rgb(12 10 8 / 72%);
+  line-height: 28px;
+}
+
+.fqb-overlay .fqb-board__hint {
+  position: absolute;
+  right: 0;
+  bottom: 8px;
+  left: 0;
+  z-index: 2;
+  margin: 0 auto;
+  width: fit-content;
+  padding: 4px 14px;
+  border-radius: 4px;
+  background: rgb(122 92 255 / 85%);
+  pointer-events: none;
+}
+
+.fqb-overlay .fqb-board__empty {
+  pointer-events: none;
+}
+
 /* ------------------------------------------------------------- art boards -- */
 
 /*
@@ -496,8 +636,16 @@
 
 /* ----------------------------------------------------- procedural styles -- */
 
+/*
+ * Textures go on `.fqb-board__art` — the board — and never on the surface, which
+ * is the wall it hangs on. That separation is what lets the overlay presentation
+ * drop the wall and let the canvas show through while the board itself keeps
+ * looking like a board. For a procedural style the art fills the surface anyway,
+ * so in a window the two are indistinguishable.
+ */
+
 /* Rough sawn planks, run vertically, with a darker rail top and bottom. */
-.fqb-board--rustic {
+.fqb-board--rustic .fqb-board__art {
   background-color: #6b4a2c;
   background-image:
     linear-gradient(180deg, rgb(0 0 0 / 45%) 0 14px, transparent 14px calc(100% - 14px), rgb(0 0 0 / 45%) calc(100% - 14px)),
@@ -506,7 +654,7 @@
 }
 
 /* Glazed, framed and lit from the top left — a board someone maintains. */
-.fqb-board--civic {
+.fqb-board--civic .fqb-board__art {
   background-color: #3f4b57;
   background-image:
     linear-gradient(155deg, rgb(255 255 255 / 16%) 0 30%, transparent 62%),
@@ -516,7 +664,7 @@
 }
 
 /* Dark timber, close-boarded, iron-banded. Bounties hang here. */
-.fqb-board--guild {
+.fqb-board--guild .fqb-board__art {
   background-color: #33241c;
   background-image:
     linear-gradient(180deg, rgb(0 0 0 / 55%) 0 10px, transparent 10px calc(100% - 10px), rgb(0 0 0 / 55%) calc(100% - 10px)),
@@ -526,7 +674,7 @@
 }
 
 /* Smoke-stained plaster over old boards, darkest at the ceiling. */
-.fqb-board--tavern {
+.fqb-board--tavern .fqb-board__art {
   background-color: #5a3f2b;
   background-image:
     linear-gradient(180deg, rgb(0 0 0 / 55%), transparent 45%, rgb(0 0 0 / 30%)),
@@ -535,7 +683,7 @@
 }
 
 /* Sun-bleached canvas, lashed and slightly slack. */
-.fqb-board--camp {
+.fqb-board--camp .fqb-board__art {
   background-color: #9c8a63;
   background-image:
     repeating-linear-gradient(45deg, rgb(255 255 255 / 10%) 0 4px, transparent 4px 8px),
@@ -544,7 +692,7 @@
 }
 
 /* Nothing of its own: for a board that *is* its background image. */
-.fqb-board--plain {
+.fqb-board--plain .fqb-board__art {
   background-color: #3a3a3a;
 }
 

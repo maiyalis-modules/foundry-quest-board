@@ -17,6 +17,14 @@
     <p class="fqb-board__missing">{{localize "FQB.Board.Missing"}}</p>
   {{else}}
 
+    {{!-- A scrim only in the overlay presentation: the board is hanging over a
+         live canvas there, and something has to say "look at this" without
+         boxing the artwork in. It never takes a click — everything outside the
+         board stays the map. --}}
+    {{#if overlay}}
+      <div class="fqb-board__scrim" aria-hidden="true"></div>
+    {{/if}}
+
     <header class="fqb-board__bar">
       <div class="fqb-board__titles">
         <span class="fqb-board__name">{{name}}</span>
@@ -49,6 +57,17 @@
             </button>
           {{/if}}
         </div>
+      {{/if}}
+
+      {{!-- The overlay has no window frame, so it has to carry its own way out.
+           This closes it on THIS client only — a player stepping away from the
+           board, not the GM taking it down for the table. --}}
+      {{#if overlay}}
+        <button type="button" class="fqb-board__close" data-fqb="close"
+                data-tooltip="{{localize "FQB.Board.CloseTooltip"}}"
+                aria-label="{{localize "FQB.Board.CloseTooltip"}}">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       {{/if}}
     </header>
 

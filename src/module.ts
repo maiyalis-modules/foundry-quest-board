@@ -91,7 +91,7 @@ function syncDisplay(): void {
   // Only on a genuinely new push. Without this guard every unrelated write to
   // the setting would re-raise a board the player had deliberately closed.
   if (display.revision !== lastRevision || display.boardId !== lastBoardId) {
-    BoardApp.open(display.boardId);
+    BoardApp.open(display.boardId, "overlay");
   }
   lastBoardId = display.boardId;
   lastRevision = display.revision;

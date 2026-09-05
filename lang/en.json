@@ -83,6 +83,7 @@
   "FQB.Board.Unrevealed": "Not revealed",
   "FQB.Board.ToggleHiddenTooltip": "Reveal or conceal this notice",
   "FQB.Board.EditNoticeTooltip": "Edit this notice",
+  "FQB.Board.CloseTooltip": "Close the board on your screen",
 
   "FQB.Editor.Title": "Edit Board",
   "FQB.Editor.NameLabel": "Name",

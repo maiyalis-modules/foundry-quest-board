@@ -25,8 +25,10 @@ System-agnostic — it touches no system data at all.
   one to tilt it. Nothing hangs straight.
 - **Reveal on your schedule.** Pin a notice now and keep it from the players
   until it matters — an unrevealed notice is never sent to their client at all.
-- **Show it to the table.** One button opens the board on every player's screen,
-  and another takes it down. A player joining mid-scene gets it automatically.
+- **Show it to the table.** One button hangs the board over the map on every
+  screen — no window frame, no box: the artwork's own transparency lets the
+  scene show through around it, and the sidebar and your controls stay clear.
+  Another button takes it down. A player joining mid-scene gets it automatically.
 - **Read the whole thing.** Clicking a notice takes it off the board and opens it
   at reading size.
 - **Linked to whatever you already use.** A notice can point at a JournalEntry,
@@ -49,8 +51,9 @@ Building a board:
 3. Save, and the board opens. Hit **Arrange** and drag the notices where you want
    them.
 
-At the table, **Show Table** puts the board on every screen; **Take Down** closes
-it again.
+At the table, **Show Table** hangs the board over the map on every screen as a
+frameless overlay; **Take Down** closes it again. Opening a board yourself gives
+you an ordinary window instead — movable, and out of everyone else's way.
 
 A small API is exposed for macros:
 

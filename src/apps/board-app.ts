@@ -6,10 +6,22 @@
  * read it; the GM additionally gets Arrange mode, the notices they have not
  * revealed yet, and the controls for pushing the board to the table.
  *
- * A framed, resizable window rather than the full-viewport overlay the sibling
- * Cinematic Slideshow uses for its stage. A slideshow is watched; a board is
- * *browsed* — players want to drag it aside, look at the map, and come back —
- * and covering the viewport would take that away for the sake of nothing.
+ * **Two presentations, one app**, because what a board is doing differs:
+ *
+ * - `window` — a framed, resizable Foundry window. What you get opening a board
+ *   yourself. A board you are building, or reading on your own while the scene
+ *   carries on, should be movable and should not take the table hostage.
+ * - `overlay` — frameless, mounted into `#interface` and covering the playable
+ *   area, the board floating over the canvas with no window chrome around it.
+ *   What the GM's Show Table produces, for everyone. The artwork carries its own
+ *   transparency, so the board reads as a thing standing in the scene rather
+ *   than a picture inside a box.
+ *
+ * Mounting into `#interface` rather than pinning to the viewport is what makes
+ * "the playable area" mean the right thing: it is already the box Foundry lays
+ * the canvas out in, so the sidebar and the scene controls are excluded without
+ * this module hard-coding any of their widths, and a UI module that moves them
+ * moves this too. Ginzzzu's portraits hang their layer in the same place.
  *
  * Instances are keyed by board id: a GM comparing two towns' boards side by side
  * is a reasonable thing to want, and two `ApplicationV2`s cannot share an id.
@@ -52,11 +64,25 @@ interface DragState {
   moved: boolean;
 }
 
+/** How a board is being shown. See the class note. */
+export type Presentation = "window" | "overlay";
+
+/**
+ * Where an overlay board hangs, in preference order.
+ *
+ * `#interface` is Foundry's own box for the canvas and everything laid over it,
+ * which is exactly "the playable area". The fallbacks are for a build that has
+ * renamed it: the canvas's own parent is the next best answer, and `body` at
+ * least puts the board on screen rather than nowhere.
+ */
+const OVERLAY_HOSTS = ["#interface", "#board", "body"] as const;
+
 export class BoardApp extends HandlebarsApplicationMixin(ApplicationV2) {
   /** Every open board window, keyed by board id. See the class note. */
   private static readonly open_: Map<string, BoardApp> = new Map();
 
   private readonly boardId: string;
+  private readonly presentation: Presentation;
   /** GM-only: whether clicking a notice moves it instead of reading it. */
   private arranging = false;
   private drag: DragState | null = null;
@@ -82,20 +108,49 @@ export class BoardApp extends HandlebarsApplicationMixin(ApplicationV2) {
     main: { template: TEMPLATES.board },
   };
 
-  constructor(boardId: string, options: AnyObject = {}) {
-    super({ id: `${MODULE_ID}-board-${boardId}`, ...options });
+  constructor(boardId: string, presentation: Presentation = "window", options: AnyObject = {}) {
+    const overlay = presentation === "overlay";
+    super({
+      id: `${MODULE_ID}-board-${boardId}`,
+      // No frame and no positioning for an overlay: Foundry must not write a
+      // left/top/width/height onto an element whose whole job is to fill the
+      // box it has been hung in. Same arrangement as the sibling Cinematic
+      // Slideshow's stage.
+      ...(overlay
+        ? {
+            classes: [MODULE_ID, "fqb-board-window", "fqb-overlay"],
+            window: { frame: false, positioned: false, title: "FQB.Board.Title" },
+            position: { width: "auto", height: "auto" },
+          }
+        : {}),
+      ...options,
+    });
     this.boardId = boardId;
+    this.presentation = presentation;
   }
 
-  /** Open a board on this client, or bring the already-open window forward. */
-  static open(boardId: string): BoardApp | null {
+  /**
+   * Open a board on this client, or bring the already-open one forward.
+   *
+   * A board already open in the *other* presentation is closed and reopened in
+   * the asked-for one — which is what happens to the GM's own window the moment
+   * they press Show Table, and it should follow the table rather than leave them
+   * looking at a different thing from everyone else.
+   */
+  static open(boardId: string, presentation: Presentation = "window"): BoardApp | null {
     if (!BoardStore.get(boardId)) return null;
     const existing = BoardApp.open_.get(boardId);
     if (existing) {
-      void existing.render(true);
-      return existing;
+      if (existing.presentation === presentation) {
+        void existing.render(true);
+        return existing;
+      }
+      // Awaited nowhere: `close()` removes it from the registry synchronously
+      // enough for the new instance below to claim the slot, and the two never
+      // share a frame on screen because the old one is told to go first.
+      void existing.close();
     }
-    const app = new BoardApp(boardId);
+    const app = new BoardApp(boardId, presentation);
     BoardApp.open_.set(boardId, app);
     void app.render(true);
     return app;
@@ -137,6 +192,7 @@ export class BoardApp extends HandlebarsApplicationMixin(ApplicationV2) {
       ...context,
       missing: false,
       isGM: gm,
+      overlay: this.presentation === "overlay",
       arranging: gm && this.arranging,
       name: board.name,
       subtitle: board.subtitle,
@@ -172,6 +228,8 @@ export class BoardApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const root = this.element as HTMLElement | undefined;
     if (!root) return;
 
+    if (this.presentation === "overlay") this.mountOverlay(root);
+
     // Toggled per render rather than baked into the template's class list: the
     // pointer handlers below are bound once and read this to decide what a
     // press means.
@@ -188,6 +246,27 @@ export class BoardApp extends HandlebarsApplicationMixin(ApplicationV2) {
     root.addEventListener("wheel", (event: WheelEvent) => this.onWheel(event, root), {
       passive: false,
     });
+  }
+
+  /**
+   * Hang an overlay board in the playable area.
+   *
+   * ApplicationV2 renders every app into its own UI layer, which spans the whole
+   * viewport — sidebar included. Moving the element into `#interface` instead is
+   * what makes the overlay cover the canvas and nothing else, and it costs one
+   * `appendChild`: Foundry keeps rendering into the element wherever it lives.
+   *
+   * Re-asserted on every render rather than done once, because a re-render can
+   * hand back a fresh element, and one left in the default layer would sit over
+   * the sidebar instead of the map.
+   */
+  private mountOverlay(root: HTMLElement): void {
+    for (const selector of OVERLAY_HOSTS) {
+      const host = document.querySelector(selector);
+      if (!host) continue;
+      if (root.parentElement !== host) host.appendChild(root);
+      return;
+    }
   }
 
   private onClick(event: Event, root: HTMLElement): void {
@@ -397,6 +476,9 @@ export class BoardApp extends HandlebarsApplicationMixin(ApplicationV2) {
   private async showToTable(): Promise<void> {
     const board = BoardStore.get(this.boardId);
     if (!board) return;
+    // Nothing here reopens this window as an overlay: writing the setting fires
+    // `updateSetting`, and `syncDisplay` in module.ts does that for every client
+    // including this one. One path onto the table, not two.
     await show(board);
   }
 
@@ -411,7 +493,10 @@ export class BoardApp extends HandlebarsApplicationMixin(ApplicationV2) {
       }
       this.rotations.clear();
     }
-    BoardApp.open_.delete(this.boardId);
+    // Only if it is still us. Swapping presentation closes the old instance and
+    // registers the new one, and a close that had to await a pending rotation
+    // would otherwise come back and evict its own replacement.
+    if (BoardApp.open_.get(this.boardId) === this) BoardApp.open_.delete(this.boardId);
     const root = this.element as HTMLElement | undefined;
     // The listeners above are re-bound on the next render, and `_onRender` gates
     // on this flag — clear it or a re-opened board is inert.
