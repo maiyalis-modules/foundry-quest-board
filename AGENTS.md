@@ -223,6 +223,14 @@ board it has.
   width-limited, a wide one height-limited — so do not assume there is any free
   band at the top: on a 2560-wide client with the sidebar collapsed the board is
   nearly full height and the controls sit over its roof.
+- **The overlay's chrome is a stack in the top left**, controls above the board's
+  name. Top left because the top right is where a game system tends to float its
+  own bar — Daggerheart's rest buttons, in the case this was built against — and
+  that is the one collision this module can avoid unilaterally. `order: -1` on
+  `.fqb-board__controls` puts them above the name without a second markup path;
+  a window keeps the ordinary "name first, buttons on the end" header. The
+  controls and the close button share the `.fqb-board__controls` wrapper so the
+  overlay moves them as one cluster.
 - **The overlay's controls are positioned off measured Foundry UI, never
   constants.** `clearTopUi()` measures `#scene-navigation` and `#ui-left` (with
   older ids as fallbacks) and writes `--fqb-overlay-top` / `--fqb-overlay-left`.

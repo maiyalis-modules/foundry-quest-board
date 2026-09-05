@@ -68,6 +68,11 @@
   .fake-left { position: absolute; top: 0; bottom: 0; left: 0; z-index: 5;
                width: 52px; background: #1a1920; border-right: 1px solid #000;
                color: #666; font-size: 10px; text-align: center; padding-top: 6px; }
+  /* A game system's own floating bar, top right — what the board's controls are
+     mirrored against. Daggerheart's rest buttons, in the case this was drawn for. */
+  .fake-restbar { position: absolute; top: 44px; right: 12px; z-index: 5;
+                  padding: 6px 14px; border-radius: 4px; background: #23222b;
+                  color: #bbb; font-size: 12px; }
   .stage .iface { position: relative; flex: 1;
                   background:
                     repeating-linear-gradient(0deg, rgb(255 255 255 / 6%) 0 1px, transparent 1px 60px),
@@ -84,6 +89,7 @@
     <!-- These two stand in for #scene-navigation and #ui-left. -->
     <div class="fake-nav">Foundry Virtual Ta…</div>
     <div class="fake-left">tools</div>
+    <div class="fake-restbar">Short  Long  Misc</div>
     <div class="foundry-quest-board fqb-board-window fqb-overlay"
          style="--fqb-overlay-top: 44px; --fqb-overlay-left: 60px;">
       <div class="fqb-board">
@@ -93,12 +99,14 @@
             <span class="fqb-board__name">Sky-Bough Village Notice Board</span>
             <span class="fqb-board__subtitle">Posted by order of the Reeve</span>
           </div>
-          <div class="fqb-board__tools">
-            <button type="button">Arrange</button>
-            <button type="button">Pin Notice</button>
-            <button type="button">Take Down</button>
+          <div class="fqb-board__controls">
+            <div class="fqb-board__tools">
+              <button type="button">Arrange</button>
+              <button type="button">Pin Notice</button>
+              <button type="button">Take Down</button>
+            </div>
+            <button type="button" class="fqb-board__close">X</button>
           </div>
-          <button type="button" class="fqb-board__close">X</button>
         </header>
         <div class="fqb-board__surface fqb-board--weathered1">
           <div class="fqb-board__art">
@@ -151,10 +159,12 @@
           <span class="fqb-board__name">Sky-Bough Village Notice Board</span>
           <span class="fqb-board__subtitle">Posted by order of the Reeve</span>
         </div>
-        <div class="fqb-board__tools">
-          <button type="button">Arrange</button>
-          <button type="button">Pin Notice</button>
-          <button type="button">Show Table</button>
+        <div class="fqb-board__controls">
+          <div class="fqb-board__tools">
+            <button type="button">Arrange</button>
+            <button type="button">Pin Notice</button>
+            <button type="button">Show Table</button>
+          </div>
         </div>
       </header>
       <div class="fqb-board__surface fqb-board--weathered1">

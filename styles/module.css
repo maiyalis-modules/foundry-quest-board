@@ -329,9 +329,11 @@
   white-space: nowrap;
 }
 
+.fqb-board__controls,
 .fqb-board__tools {
   display: flex;
   flex: 0 0 auto;
+  align-items: center;
   gap: 4px;
 }
 
@@ -512,9 +514,17 @@
   pointer-events: auto;
 }
 
-/* The bar stops being a header and becomes two floating clusters: the board's
-   name at the top left of the area, the GM's controls at the top right. Both
-   need their own background — they are sitting over a map, not over a panel. */
+/*
+ * The bar stops being a header and becomes a floating stack in the top left of
+ * the playable area: the controls, and the board's name under them.
+ *
+ * Top left because the top right is where a game system tends to put its own
+ * floating bar — Daggerheart's rest buttons, for one — and two clusters fighting
+ * for the same corner is the collision this module can avoid unilaterally.
+ * `width: fit-content` keeps the bar off the rest of the board: it is a
+ * `pointer-events: none` element either way, but a full-width one would sit
+ * across the artwork for no reason.
+ */
 .fqb-overlay .fqb-board__bar {
   position: absolute;
   /* Set by `clearTopUi()` from the measured scene navigation — the overlay sits
@@ -522,25 +532,38 @@
      simply covered. The fallback is for a board that renders before anything has
      measured, not a value anyone should rely on. */
   top: var(--fqb-overlay-top, 8px);
-  right: 12px;
+  right: auto;
   /* Same measurement, other axis: `#interface` runs the full width *behind* the
-     scene tools, so the title plaque starts underneath them without this. */
+     scene tools, so this cluster starts underneath them without it. */
   left: var(--fqb-overlay-left, 12px);
   z-index: 2;
+  flex-direction: column;
   align-items: flex-start;
+  gap: 6px;
+  width: fit-content;
   padding: 0;
   border: none;
   background: none;
 }
 
+/* Controls above the name — the top-most thing on the left, level with whatever
+   the system floats on the right. `order` rather than moving them in the
+   template, so a window keeps the ordinary "name first, buttons on the end"
+   header without a second markup path. */
+.fqb-overlay .fqb-board__controls {
+  order: -1;
+  padding: 3px;
+  border-radius: 4px;
+  background: rgb(12 10 8 / 72%);
+}
+
+/* The bar itself lets clicks through to the map; only these two take them. */
 .fqb-overlay .fqb-board__titles,
-.fqb-overlay .fqb-board__tools,
-.fqb-overlay .fqb-board__close {
+.fqb-overlay .fqb-board__controls {
   pointer-events: auto;
 }
 
-/* Title left, controls right — `margin-left: auto` on the tools rather than a
-   spacer element, so the bar's markup is the same in both presentations. */
+/* The board's name, under the controls. */
 .fqb-overlay .fqb-board__titles {
   flex: 0 1 auto;
   padding: 4px 12px;
@@ -549,25 +572,16 @@
   text-shadow: 0 1px 3px rgb(0 0 0 / 80%);
 }
 
-.fqb-overlay .fqb-board__tools {
-  margin-left: auto;
-  padding: 3px;
-  border-radius: 4px;
-  background: rgb(12 10 8 / 72%);
-}
-
 .fqb-overlay .fqb-board__name {
   font-size: var(--font-size-20, 20px);
 }
 
 .fqb-overlay .fqb-board__close {
   flex: 0 0 auto;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   padding: 0;
-  border-radius: 4px;
-  background: rgb(12 10 8 / 72%);
-  line-height: 28px;
+  line-height: 26px;
 }
 
 /* Under the control bar, not at the foot of the screen: the board stands on the

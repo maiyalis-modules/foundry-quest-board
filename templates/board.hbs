@@ -31,6 +31,11 @@
         {{#if subtitle}}<span class="fqb-board__subtitle">{{subtitle}}</span>{{/if}}
       </div>
 
+      {{!-- Tools and the close button share a wrapper so the overlay can move
+           them as one cluster to the top left, mirroring whatever the system
+           puts at the top right. In a window the wrapper is just a row on the
+           end of the header, which is where it was anyway. --}}
+      <div class="fqb-board__controls">
       {{#if isGM}}
         <div class="fqb-board__tools">
           <button type="button" class="{{#if arranging}}fqb-active{{/if}}" data-fqb="arrange"
@@ -69,6 +74,7 @@
           <i class="fa-solid fa-xmark"></i>
         </button>
       {{/if}}
+      </div>
     </header>
 
     {{#if arranging}}
