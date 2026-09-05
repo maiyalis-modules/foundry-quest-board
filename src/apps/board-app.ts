@@ -77,6 +77,39 @@ export type Presentation = "window" | "overlay";
  */
 const OVERLAY_HOSTS = ["#interface", "#board", "body"] as const;
 
+/**
+ * Foundry UI that runs along the top of the playable area, which the overlay's
+ * own controls have to drop below.
+ *
+ * The overlay deliberately sits *under* Foundry's chrome (see the `z-index`
+ * note in module.css), so anything up there covers the board's control bar
+ * rather than the other way round. `#scene-navigation` is the v13+ id and
+ * `#navigation` the older one; both are listed because which exists is a
+ * question about the build, not something worth branching on.
+ */
+const TOP_UI = ["#scene-navigation", "#navigation"] as const;
+
+/**
+ * Foundry UI down the left of the playable area — the scene control tools.
+ *
+ * `#interface` spans the full width *behind* these, so the board's own title
+ * plaque starts underneath them unless it is pushed clear the same way.
+ */
+const LEFT_UI = ["#ui-left", "#scene-controls", "#controls"] as const;
+
+/** Gap left between Foundry's own UI and the overlay's controls. */
+const OVERLAY_CHROME_GAP_PX = 8;
+
+/**
+ * Ceiling on the measured offset, as a fraction of the playable area's height.
+ *
+ * A UI module that reports something enormous — a full-height panel matching one
+ * of the selectors above, say — should not push the controls off the bottom of
+ * the screen. Overlapping the navigation is a much better failure than being
+ * unreachable.
+ */
+const OVERLAY_CHROME_MAX_FRACTION = 0.35;
+
 export class BoardApp extends HandlebarsApplicationMixin(ApplicationV2) {
   /** Every open board window, keyed by board id. See the class note. */
   private static readonly open_: Map<string, BoardApp> = new Map();
@@ -265,7 +298,59 @@ export class BoardApp extends HandlebarsApplicationMixin(ApplicationV2) {
       const host = document.querySelector(selector);
       if (!host) continue;
       if (root.parentElement !== host) host.appendChild(root);
+      this.clearTopUi(root, host);
       return;
+    }
+  }
+
+  /**
+   * Drop the overlay's controls below whatever Foundry has along the top.
+   *
+   * Measured rather than assumed: the scene navigation's height depends on the
+   * build, on how many scenes there are, on whether it is collapsed, and on
+   * whatever UI module the user runs — this module has no business hard-coding
+   * any of that. Viewport rectangles are compared, not offsets within the DOM,
+   * so it does not matter whether the navigation is even inside the host.
+   */
+  private clearTopUi(root: HTMLElement, host: Element): void {
+    const hostRect = host.getBoundingClientRect();
+
+    const clearance = (selectors: readonly string[], edge: "bottom" | "right"): number => {
+      let offset = 0;
+      for (const selector of selectors) {
+        const element = document.querySelector(selector);
+        if (!element) continue;
+        const rect = element.getBoundingClientRect();
+        // A collapsed or hidden bar measures zero and is nothing to clear.
+        if (rect.width === 0 || rect.height === 0) continue;
+        const from = edge === "bottom" ? rect.bottom - hostRect.top : rect.right - hostRect.left;
+        offset = Math.max(offset, from);
+      }
+      return offset;
+    };
+
+    const cap = (offset: number, extent: number): string => {
+      const ceiling = extent * OVERLAY_CHROME_MAX_FRACTION;
+      return `${Math.round(Math.min(Math.max(offset, 0) + OVERLAY_CHROME_GAP_PX, ceiling))}px`;
+    };
+
+    root.style.setProperty("--fqb-overlay-top", cap(clearance(TOP_UI, "bottom"), hostRect.height));
+    root.style.setProperty("--fqb-overlay-left", cap(clearance(LEFT_UI, "right"), hostRect.width));
+  }
+
+  /**
+   * Re-measure every open overlay's top offset.
+   *
+   * The scene navigation collapses, expands and re-renders on its own schedule,
+   * none of which re-renders this app — so `module.ts` hangs this off the hooks
+   * that fire when it does.
+   */
+  static reflowOverlays(): void {
+    for (const app of BoardApp.open_.values()) {
+      if (app.presentation !== "overlay" || !app.rendered) continue;
+      const root = app.element as HTMLElement | undefined;
+      const host = root?.parentElement;
+      if (root && host) app.clearTopUi(root, host);
     }
   }
 

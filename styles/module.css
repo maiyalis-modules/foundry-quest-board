@@ -517,12 +517,18 @@
    need their own background — they are sitting over a map, not over a panel. */
 .fqb-overlay .fqb-board__bar {
   position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
+  /* Set by `clearTopUi()` from the measured scene navigation — the overlay sits
+     under Foundry's chrome, so the controls have to start below it or they are
+     simply covered. The fallback is for a board that renders before anything has
+     measured, not a value anyone should rely on. */
+  top: var(--fqb-overlay-top, 8px);
+  right: 12px;
+  /* Same measurement, other axis: `#interface` runs the full width *behind* the
+     scene tools, so the title plaque starts underneath them without this. */
+  left: var(--fqb-overlay-left, 12px);
   z-index: 2;
   align-items: flex-start;
-  padding: 8px 12px;
+  padding: 0;
   border: none;
   background: none;
 }
@@ -568,7 +574,7 @@
    bottom edge now, and a hint down there would be lying across it. */
 .fqb-overlay .fqb-board__hint {
   position: absolute;
-  top: 46px;
+  top: calc(var(--fqb-overlay-top, 8px) + 42px);
   right: 0;
   left: 0;
   z-index: 2;

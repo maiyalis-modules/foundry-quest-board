@@ -25,7 +25,7 @@
         (async () => {
           const b = await puppeteer.launch({args:["--no-sandbox","--allow-file-access-from-files"]});
           const p = await b.newPage();
-          await p.setViewport({width: 1600, height: 3600});
+          await p.setViewport({width: 1900, height: 3600});
           await p.goto("file:///app/tools/board-preview.html", {waitUntil: "networkidle0"});
           for (const id of ["overlay","wide","narrow","proc","custom"])
             await (await p.$("#"+id)).screenshot({path: "/app/tools/shot-"+id+".png"});
@@ -55,7 +55,19 @@
 
   /* Stand-in for Foundry's #interface: the canvas area the overlay is hung in,
      with a fake map behind it and a fake sidebar beside it. */
-  .stage { position: relative; width: 1560px; height: 820px; display: flex; }
+  /* Proportions close to a real 2560-wide client with the sidebar collapsed,
+     where the board is width-limited and nearly fills the height — the case
+     where the overlay's controls have to sit over the board's own roof. */
+  .stage { position: relative; width: 1860px; height: 820px; display: flex; }
+  /* Fakes for the Foundry UI the overlay controls have to clear. The real
+     offsets are measured at runtime by `clearTopUi()` in apps/board-app.ts;
+     these panels and the inline vars below stand in for that measurement. */
+  .fake-nav { position: absolute; top: 6px; left: 210px; z-index: 5;
+              padding: 6px 14px; border-radius: 4px; background: #23222b;
+              color: #999; font-size: 12px; }
+  .fake-left { position: absolute; top: 0; bottom: 0; left: 0; z-index: 5;
+               width: 52px; background: #1a1920; border-right: 1px solid #000;
+               color: #666; font-size: 10px; text-align: center; padding-top: 6px; }
   .stage .iface { position: relative; flex: 1;
                   background:
                     repeating-linear-gradient(0deg, rgb(255 255 255 / 6%) 0 1px, transparent 1px 60px),
@@ -69,7 +81,11 @@
 
 <div class="stage" id="overlay">
   <div class="iface">
-    <div class="foundry-quest-board fqb-board-window fqb-overlay">
+    <!-- These two stand in for #scene-navigation and #ui-left. -->
+    <div class="fake-nav">Foundry Virtual Ta…</div>
+    <div class="fake-left">tools</div>
+    <div class="foundry-quest-board fqb-board-window fqb-overlay"
+         style="--fqb-overlay-top: 44px; --fqb-overlay-left: 60px;">
       <div class="fqb-board">
         <div class="fqb-board__scrim" aria-hidden="true"></div>
         <header class="fqb-board__bar">

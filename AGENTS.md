@@ -218,9 +218,23 @@ board it has.
   so Foundry's navigation, controls and token HUD stay above the board.
 - **The overlay board stands on the bottom edge**, 90% of the playable area's
   width and at most 95% of its height, aspect preserved. All the leftover height
-  goes above it — which is where the controls and the Arrange hint live, so
-  neither ever lies across the board. On a normal widescreen the width is what
-  binds, and the board comes out around 78% of the height.
+  goes above it, which is where the controls and the Arrange hint live. Which of
+  the two limits binds depends on the client's proportions — a squarer window is
+  width-limited, a wide one height-limited — so do not assume there is any free
+  band at the top: on a 2560-wide client with the sidebar collapsed the board is
+  nearly full height and the controls sit over its roof.
+- **The overlay's controls are positioned off measured Foundry UI, never
+  constants.** `clearTopUi()` measures `#scene-navigation` and `#ui-left` (with
+  older ids as fallbacks) and writes `--fqb-overlay-top` / `--fqb-overlay-left`.
+  It has to: the overlay sits *under* Foundry's chrome by design, so anything at
+  the top covers the control bar rather than the reverse, and `#interface` spans
+  the full width *behind* the scene tools, so the title plaque starts underneath
+  them. Both are compared as viewport rectangles, so it does not matter where in
+  the DOM those elements live, and both are capped at a fraction of the area —
+  controls overlapping the navigation is a far better failure than controls
+  pushed off the screen. Scene navigation collapses and re-renders without
+  re-rendering this app, which is why `module.ts` re-measures on
+  `renderSceneNavigation`, `collapseSceneNavigation` and `canvasReady`.
 - **Only the pinnable panel takes clicks in the overlay.** `.fqb-overlay` is
   `pointer-events: none` and the panel re-enables it. The frame, the transparent
   surround and the scrim all let clicks through to the map — otherwise the GM

@@ -173,6 +173,14 @@ Hooks.on("updateSetting", (setting: { key?: string } | undefined) => {
   if (library?.rendered) void library.render();
 });
 
+// The overlay's controls sit below the scene navigation, whose height changes
+// when it re-renders, collapses or expands — none of which re-renders the board.
+// Re-measure on each, or the controls end up either behind the navigation or
+// floating well below where it now ends.
+for (const hook of ["renderSceneNavigation", "collapseSceneNavigation", "canvasReady"]) {
+  Hooks.on(hook, () => BoardApp.reflowOverlays());
+}
+
 // Add the launch button to the Journal sidebar's header controls, unless
 // disabled. Shown to players too — a player with a board they may browse should
 // be able to walk back up to it without asking the GM to push it again.
