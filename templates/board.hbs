@@ -1,0 +1,138 @@
+{{!-- The board. Rendered for players and the GM alike; the GM additionally gets
+     the toolbar, the unrevealed notices, and — in Arrange mode — the per-notice
+     tools and a draggable surface.
+
+     Everything is wrapped in one `.fqb-board` element, and the wrapper is
+     OUTSIDE the `{{#if missing}}`: ApplicationV2 requires a part to render
+     exactly one element, always. Two siblings throws, and so does rendering
+     nothing — and a GM-only sibling only throws for the GM, which makes it look
+     like a permissions bug rather than a template one.
+
+     `{{style}}` on a notice is built in `_prepareContext` from its stored
+     position, tilt and stacking order — a stylesheet cannot know where the GM
+     left this one. --}}
+<div class="fqb-board">
+
+  {{#if missing}}
+    <p class="fqb-board__missing">{{localize "FQB.Board.Missing"}}</p>
+  {{else}}
+
+    <header class="fqb-board__bar">
+      <div class="fqb-board__titles">
+        <span class="fqb-board__name">{{name}}</span>
+        {{#if subtitle}}<span class="fqb-board__subtitle">{{subtitle}}</span>{{/if}}
+      </div>
+
+      {{#if isGM}}
+        <div class="fqb-board__tools">
+          <button type="button" class="{{#if arranging}}fqb-active{{/if}}" data-fqb="arrange"
+                  data-tooltip="{{localize "FQB.Board.ArrangeTooltip"}}">
+            <i class="fa-solid fa-up-down-left-right"></i>
+            {{localize "FQB.Board.Arrange"}}
+          </button>
+          <button type="button" data-fqb="add-notice"
+                  data-tooltip="{{localize "FQB.Board.AddNoticeTooltip"}}">
+            <i class="fa-solid fa-plus"></i>
+            {{localize "FQB.Board.AddNotice"}}
+          </button>
+          {{#if pushed}}
+            <button type="button" data-fqb="hide"
+                    data-tooltip="{{localize "FQB.Board.TakeDownTooltip"}}">
+              <i class="fa-solid fa-eye-slash"></i>
+              {{localize "FQB.Board.TakeDown"}}
+            </button>
+          {{else}}
+            <button type="button" data-fqb="show"
+                    data-tooltip="{{localize "FQB.Board.ShowTooltip"}}">
+              <i class="fa-solid fa-tower-broadcast"></i>
+              {{localize "FQB.Board.Show"}}
+            </button>
+          {{/if}}
+        </div>
+      {{/if}}
+    </header>
+
+    {{#if arranging}}
+      <p class="fqb-board__hint">{{localize "FQB.Board.ArrangeHint"}}</p>
+    {{/if}}
+
+    <div class="fqb-board__surface {{boardClass}}"
+         {{#if background}}style="background-image: url('{{background}}');"{{/if}}>
+
+      {{#if empty}}
+        <p class="fqb-board__empty">{{localize emptyMessage}}</p>
+      {{/if}}
+
+      {{#each notices}}
+        <article class="fqb-notice {{this.templateClass}} {{this.pinClass}} {{this.sizeClass}} {{#if this.hidden}}fqb-notice--unrevealed{{/if}}"
+                 style="{{this.style}}"
+                 data-fqb="read" data-notice-id="{{this.id}}"
+                 {{!-- The tooltip has to say what a click will actually do:
+                       while arranging, it moves the notice rather than opening
+                       it (see the `read` case in apps/board-app.ts). --}}
+                 {{#if ../arranging}}
+                   data-tooltip="{{localize "FQB.Board.DragTooltip"}}"
+                 {{else}}
+                   data-tooltip="{{localize "FQB.Board.ReadTooltip"}}"
+                 {{/if}}>
+
+          <span class="fqb-notice__fastener" aria-hidden="true"></span>
+
+          {{#if this.image}}
+            <div class="fqb-notice__image">
+              <img src="{{this.image}}" alt="">
+            </div>
+          {{/if}}
+
+          {{#if this.title}}
+            <h2 class="fqb-notice__title">{{this.title}}</h2>
+          {{/if}}
+
+          {{#if this.excerpt}}
+            <p class="fqb-notice__excerpt">{{this.excerpt}}</p>
+          {{/if}}
+
+          {{#if this.reward}}
+            <p class="fqb-notice__reward">{{this.reward}}</p>
+          {{/if}}
+
+          {{#if this.postedBy}}
+            <p class="fqb-notice__posted-by">{{localize "FQB.Notice.PostedBy"}} {{this.postedBy}}</p>
+          {{/if}}
+
+          {{#if this.hasLink}}
+            <i class="fa-solid fa-link fqb-notice__link-mark" aria-hidden="true"></i>
+          {{/if}}
+
+          {{#if ../isGM}}
+            {{#if this.hidden}}
+              <span class="fqb-notice__badge">{{localize "FQB.Board.Unrevealed"}}</span>
+            {{/if}}
+            {{#if ../arranging}}
+              <div class="fqb-notice__tools">
+                <button type="button" data-fqb="toggle-hidden" data-notice-id="{{this.id}}"
+                        data-tooltip="{{localize "FQB.Board.ToggleHiddenTooltip"}}"
+                        aria-label="{{localize "FQB.Board.ToggleHiddenTooltip"}}">
+                  {{#if this.hidden}}
+                    <i class="fa-solid fa-eye-slash"></i>
+                  {{else}}
+                    <i class="fa-solid fa-eye"></i>
+                  {{/if}}
+                </button>
+                <button type="button" data-fqb="edit-notice" data-notice-id="{{this.id}}"
+                        data-tooltip="{{localize "FQB.Board.EditNoticeTooltip"}}"
+                        aria-label="{{localize "FQB.Board.EditNoticeTooltip"}}">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+              </div>
+            {{/if}}
+          {{/if}}
+
+        </article>
+      {{/each}}
+
+    </div>
+
+  {{/if}}
+
+</div>

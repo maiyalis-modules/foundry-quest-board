@@ -1,0 +1,35 @@
+# Containerized build toolchain for the Maiyalis: Quest Board module.
+#
+# FoundryVTT runs natively on the host; these services only compile
+# src/*.ts -> dist/module.js, which lands back on the host via the bind mount.
+#
+#   docker compose run --rm build   # one-off type-check + build
+#   docker compose up watch         # rebuild dist/ on every save
+#
+# node_modules lives in a NAMED VOLUME (not the bind mount) because Vite/esbuild
+# ship platform-specific native binaries — a Windows-installed node_modules will
+# not run inside this Linux container. package-lock.json still persists to the
+# host through the bind mount.
+
+x-node: &node
+  image: node:22-bookworm-slim
+  working_dir: /app
+  init: true
+  # These are manual, developer-invoked containers — never auto-restart them
+  # on daemon start / reboot. Keep this "no"; do not change to always/unless-stopped.
+  restart: "no"
+  volumes:
+    - .:/app
+    - quest-board-node-modules:/app/node_modules
+
+services:
+  build:
+    <<: *node
+    command: sh -lc "npm install && npm run build"
+
+  watch:
+    <<: *node
+    command: sh -lc "npm install && npm run watch"
+
+volumes:
+  quest-board-node-modules:

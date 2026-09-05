@@ -1,0 +1,77 @@
+{{!-- The notice close-up. One root element, as every ApplicationV2 part must
+     render exactly one — including the "no longer on the board" branch.
+
+     The body is a list of paragraphs rather than one blob: blank lines are how a
+     GM writes a break in notice text, and each paragraph goes through
+     Handlebars' own escaping, so notice text stays text. There is no innerHTML
+     path into this window. --}}
+<div class="fqb-detail">
+
+  {{#if missing}}
+    <p class="fqb-detail__missing">{{localize "FQB.Notice.Gone"}}</p>
+  {{else}}
+
+    <div class="fqb-detail__sheet {{templateClass}}">
+
+      {{#if image}}
+        <div class="fqb-detail__image">
+          <img src="{{image}}" alt="">
+        </div>
+      {{/if}}
+
+      {{#if title}}
+        <h1 class="fqb-detail__title">{{title}}</h1>
+      {{/if}}
+
+      <div class="fqb-detail__body">
+        {{#each paragraphs}}
+          <p class="fqb-detail__paragraph">{{this}}</p>
+        {{/each}}
+      </div>
+
+      {{#if hasFooter}}
+        <div class="fqb-detail__footer">
+          {{#if reward}}
+            <p class="fqb-detail__reward">
+              <span class="fqb-detail__label">{{localize "FQB.Notice.Reward"}}</span>
+              {{reward}}
+            </p>
+          {{/if}}
+          {{#if postedBy}}
+            <p class="fqb-detail__posted-by">
+              <span class="fqb-detail__label">{{localize "FQB.Notice.PostedBy"}}</span>
+              {{postedBy}}
+            </p>
+          {{/if}}
+        </div>
+      {{/if}}
+
+    </div>
+
+    <div class="fqb-detail__actions">
+      <span class="fqb-detail__board">
+        {{localize "FQB.Notice.FromBoard"}} {{boardName}}
+        {{#if hidden}} · {{localize "FQB.Board.Unrevealed"}}{{/if}}
+      </span>
+      {{#if link}}
+        {{#if link.valid}}
+          <button type="button" data-fqb="open-link" data-uuid="{{link.uuid}}">
+            <i class="fa-solid fa-book-open"></i>
+            {{link.name}}
+          </button>
+        {{else}}
+          {{#if isGM}}
+            {{!-- Only the GM is told a link is broken. To a player it is just a
+                 notice with nothing more to it, which is what it now is. --}}
+            <span class="fqb-detail__broken">
+              <i class="fa-solid fa-link-slash"></i>
+              {{localize "FQB.Notice.BrokenLink"}}
+            </span>
+          {{/if}}
+        {{/if}}
+      {{/if}}
+    </div>
+
+  {{/if}}
+
+</div>

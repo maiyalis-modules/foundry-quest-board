@@ -1,0 +1,24 @@
+{{!-- Save/Cancel for the whole window. `data-fqb` rather than `data-action`
+     because the click dispatch is our own delegated listener (see
+     apps/config-window.ts).
+
+     Save & Add appears only for a window that sets `canSaveAndAdd` — today just
+     the notice editor, and only while pinning a new notice rather than editing
+     one. Save stays rightmost in both cases so it does not move under the
+     pointer. --}}
+<footer class="form-footer">
+  <button type="button" data-fqb="cancel">
+    <i class="fa-solid fa-xmark"></i>
+    {{localize "FQB.Config.Cancel"}}
+  </button>
+  {{#if canSaveAndAdd}}
+    <button type="button" data-fqb="save-and-add">
+      <i class="fa-solid fa-plus"></i>
+      {{localize "FQB.Config.SaveAndAdd"}}
+    </button>
+  {{/if}}
+  <button type="button" data-fqb="save">
+    <i class="fa-solid fa-floppy-disk"></i>
+    {{localize "FQB.Config.Save"}}
+  </button>
+</footer>

@@ -1,0 +1,20 @@
+{
+  "name": "foundry-quest-board",
+  "version": "1.1.0",
+  "description": "Maiyalis: Quest Board — immersive, physical-looking notice boards of parchment notices, wanted posters, rumours and jobs for FoundryVTT.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc --noEmit && vite build",
+    "watch": "vite build --watch",
+    "dev": "vite build --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "rimraf": "^6.0.1",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.0"
+  }
+}

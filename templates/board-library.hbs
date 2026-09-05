@@ -1,0 +1,93 @@
+{{!-- The board list. One root element (ApplicationV2 renders exactly one per
+     part); this window has no shared footer because New Board belongs at the top
+     of the list, not beside a Save button it does not have.
+
+     Every GM-only control is inside `{{#if ../isGM}}` rather than in a separate
+     GM-only sibling block — a second root-level element renders fine for players
+     and throws only for the GM, which reads like a permissions bug. --}}
+<div class="fqb-config-body fqb-library">
+
+  {{#if isGM}}
+    <div class="fqb-library__toolbar">
+      <button type="button" data-fqb="new">
+        <i class="fa-solid fa-plus"></i>
+        {{localize "FQB.Library.New"}}
+      </button>
+      {{#if anyPushed}}
+        <button type="button" data-fqb="hide"
+                data-tooltip="{{localize "FQB.Library.HideTooltip"}}">
+          <i class="fa-solid fa-eye-slash"></i>
+          {{localize "FQB.Library.Hide"}}
+        </button>
+      {{/if}}
+    </div>
+  {{/if}}
+
+  {{#if empty}}
+    <p class="hint fqb-library__empty">{{localize emptyMessage}}</p>
+  {{else}}
+    <ol class="fqb-library__list">
+      {{#each boards}}
+        <li class="fqb-library__row" data-board-id="{{this.id}}">
+          <div class="fqb-library__swatch {{this.styleClass}}"
+               {{#if this.background}}style="background-image: url('{{this.background}}');"{{/if}}>
+            <i class="fa-solid fa-thumbtack"></i>
+          </div>
+
+          <div class="fqb-library__meta">
+            <span class="fqb-library__name">
+              {{this.name}}
+              {{#if this.pushed}}
+                <i class="fa-solid fa-tower-broadcast fqb-library__pushed"
+                   data-tooltip="{{localize "FQB.Library.PushedTooltip"}}"></i>
+              {{/if}}
+            </span>
+            {{#if this.subtitle}}
+              <span class="fqb-library__subtitle">{{this.subtitle}}</span>
+            {{/if}}
+            <span class="fqb-library__count">
+              {{this.count}}
+              {{#if this.hiddenCount}}
+                <span class="fqb-library__unrevealed"
+                      data-tooltip="{{localize "FQB.Library.UnrevealedTooltip"}}">
+                  <i class="fa-solid fa-eye-slash"></i> {{this.hiddenCount}}
+                </span>
+              {{/if}}
+            </span>
+          </div>
+
+          <div class="fqb-library__actions">
+            <button type="button" data-fqb="open" data-board-id="{{this.id}}"
+                    data-tooltip="{{localize "FQB.Library.Open"}}"
+                    aria-label="{{localize "FQB.Library.Open"}}">
+              <i class="fa-solid fa-book-open"></i>
+            </button>
+            {{#if ../isGM}}
+              <button type="button" data-fqb="show" data-board-id="{{this.id}}"
+                      data-tooltip="{{localize "FQB.Library.Show"}}"
+                      aria-label="{{localize "FQB.Library.Show"}}">
+                <i class="fa-solid fa-tower-broadcast"></i>
+              </button>
+              <button type="button" data-fqb="edit" data-board-id="{{this.id}}"
+                      data-tooltip="{{localize "FQB.Library.Edit"}}"
+                      aria-label="{{localize "FQB.Library.Edit"}}">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button type="button" data-fqb="duplicate" data-board-id="{{this.id}}"
+                      data-tooltip="{{localize "FQB.Library.Duplicate"}}"
+                      aria-label="{{localize "FQB.Library.Duplicate"}}">
+                <i class="fa-solid fa-clone"></i>
+              </button>
+              <button type="button" data-fqb="delete" data-board-id="{{this.id}}"
+                      data-tooltip="{{localize "FQB.Library.Delete"}}"
+                      aria-label="{{localize "FQB.Library.Delete"}}">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            {{/if}}
+          </div>
+        </li>
+      {{/each}}
+    </ol>
+  {{/if}}
+
+</div>

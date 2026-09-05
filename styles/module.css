@@ -1,0 +1,813 @@
+/*
+ * Maiyalis: Quest Board
+ *
+ * Three unrelated surfaces live in here:
+ *   1. The GM's windows (library, editors, settings) — ordinary ApplicationV2
+ *      forms, styled only where Foundry's own form CSS leaves a gap.
+ *   2. The board — a physical-looking wall of pinned paper, browsed by the whole
+ *      table. Everything below "the board" is there to sell that it is a thing
+ *      made of wood and paper rather than a list.
+ *   3. The close-up — one notice, taken down and read.
+ *
+ * A board style, a notice template and a pin are **data, not code paths** (see
+ * `src/models/board.ts`): each is one value in a const object and one rule in
+ * this file. Adding a new one should never mean touching a `.ts`.
+ *
+ * There are no image assets in this module. Every texture here is built out of
+ * layered CSS gradients, which keeps the download small and means a board looks
+ * the same whether or not a user has their own art — and a GM who *does* have
+ * art drops it in as a board background, which replaces the texture and leaves
+ * the frame and the pins alone.
+ *
+ * Foundry live-applies changes to this file with no page refresh, so it is the
+ * fastest thing in the module to iterate on.
+ */
+
+/* ---------------------------------------------------------------- sidebar -- */
+
+.foundry-quest-board-launch-row {
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.foundry-quest-board-launch {
+  flex: 1;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------- GM windows -- */
+
+.fqb-config .fqb-config-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  overflow-y: auto;
+}
+
+.fqb-library__toolbar,
+.fqb-editor__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fqb-editor__heading {
+  flex: 1;
+  font-weight: bold;
+}
+
+.fqb-library__toolbar button,
+.fqb-editor__toolbar button {
+  flex: 0 0 auto;
+}
+
+.fqb-library__list,
+.fqb-editor__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fqb-library__row,
+.fqb-editor__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border: 1px solid var(--color-border-light-tertiary, rgb(0 0 0 / 25%));
+  border-radius: 4px;
+  background: rgb(0 0 0 / 5%);
+}
+
+/* An unrevealed notice reads as provisional in the list, the same way it does
+   on the board — one visual language for "the players cannot see this". */
+.fqb-editor__row--hidden {
+  opacity: 0.6;
+  border-style: dashed;
+}
+
+.fqb-editor__number {
+  flex: 0 0 1.5em;
+  text-align: center;
+  font-weight: bold;
+  opacity: 0.6;
+}
+
+/* The placeholder icon and a real thumbnail have to occupy the same box, or the
+   list jumps as notices gain images. */
+.fqb-library__swatch,
+.fqb-editor__thumb {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 3px;
+  background-size: cover;
+  background-position: center;
+  color: rgb(255 255 255 / 75%);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 60%);
+}
+
+.fqb-editor__thumb {
+  background: rgb(0 0 0 / 20%);
+  color: inherit;
+  text-shadow: none;
+  opacity: 0.85;
+}
+
+.fqb-editor__thumb img {
+  width: 100%;
+  height: 100%;
+  border: none;
+  object-fit: cover;
+}
+
+.fqb-library__meta,
+.fqb-editor__meta {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.fqb-library__name,
+.fqb-editor__summary {
+  overflow: hidden;
+  font-weight: bold;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fqb-library__subtitle,
+.fqb-library__count,
+.fqb-editor__tags {
+  overflow: hidden;
+  font-size: var(--font-size-12, 12px);
+  opacity: 0.7;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fqb-library__pushed {
+  margin-left: 4px;
+  color: var(--color-text-hyperlink, #7a5cff);
+}
+
+.fqb-library__unrevealed {
+  margin-left: 6px;
+  opacity: 0.9;
+}
+
+.fqb-library__actions,
+.fqb-editor__actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 2px;
+}
+
+.fqb-library__actions button,
+.fqb-editor__actions button {
+  width: 28px;
+  padding: 0;
+  line-height: 26px;
+}
+
+.fqb-library__empty {
+  padding: 12px 4px;
+}
+
+/* Board-style swatches in the library: the same gradients as the boards
+   themselves, shrunk. A row should look like the board it opens. */
+.fqb-swatch--rustic { background-color: #6b4a2c; background-image: repeating-linear-gradient(90deg, rgb(0 0 0 / 22%) 0 1px, transparent 1px 11px); }
+.fqb-swatch--civic { background-color: #3f4b57; background-image: linear-gradient(160deg, rgb(255 255 255 / 18%), transparent 60%); }
+.fqb-swatch--guild { background-color: #33241c; background-image: repeating-linear-gradient(90deg, rgb(0 0 0 / 30%) 0 1px, transparent 1px 9px); }
+.fqb-swatch--tavern { background-color: #5a3f2b; background-image: linear-gradient(180deg, rgb(0 0 0 / 35%), transparent 70%); }
+.fqb-swatch--camp { background-color: #9c8a63; background-image: repeating-linear-gradient(45deg, rgb(255 255 255 / 12%) 0 3px, transparent 3px 6px); }
+.fqb-swatch--plain { background-color: #4a4a4a; }
+
+/* ------------------------------------------------------- notice-editor bits -- */
+
+.fqb-link-field,
+.fqb-rotation-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fqb-link-field button {
+  flex: 0 0 auto;
+  width: 28px;
+  padding: 0;
+  line-height: 26px;
+}
+
+.fqb-link-chip {
+  display: inline-flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  overflow: hidden;
+  border: 1px solid var(--color-border-light-tertiary, rgb(0 0 0 / 25%));
+  border-radius: 3px;
+  background: rgb(0 0 0 / 8%);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A dashed, dimmed chip reads as a slot waiting for something rather than as a
+   control that does nothing — which is exactly what an empty drop target is. */
+.fqb-link-chip--empty {
+  border-style: dashed;
+  opacity: 0.7;
+}
+
+.fqb-link-chip--broken {
+  border-color: var(--color-level-error-border, #8b2e2e);
+  color: var(--color-level-error, #b34b4b);
+}
+
+/* Highlight the whole group while a document is dragged over it: the chip alone
+   is a small target for a gesture aimed roughly at "the link field". */
+.fqb-link-drop {
+  border-radius: 4px;
+  transition: background-color 120ms ease;
+}
+
+.fqb-link-drop:hover {
+  background: rgb(0 0 0 / 4%);
+}
+
+.fqb-rotation-field input[type="range"] {
+  flex: 1;
+}
+
+.fqb-rotation-value {
+  flex: 0 0 3.5em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
+
+/* ------------------------------------------------------------------ board -- */
+
+/* The window chrome gets out of the way entirely: the board is meant to read as
+   a thing on a wall, not as content inside a form. */
+.fqb-board-window .window-content {
+  padding: 0;
+  overflow: hidden;
+}
+
+.fqb-board {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 320px;
+}
+
+.fqb-board__missing {
+  margin: auto;
+  padding: 24px;
+  opacity: 0.7;
+}
+
+.fqb-board__bar {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgb(0 0 0 / 35%);
+  background: rgb(0 0 0 / 25%);
+}
+
+.fqb-board__titles {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.fqb-board__name {
+  overflow: hidden;
+  font-family: var(--font-h1, "Signika"), serif;
+  font-size: var(--font-size-18, 18px);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fqb-board__subtitle {
+  overflow: hidden;
+  font-size: var(--font-size-12, 12px);
+  font-style: italic;
+  opacity: 0.75;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fqb-board__tools {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 4px;
+}
+
+.fqb-board__tools button {
+  width: auto;
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+/* The one piece of state the GM has to be able to read at a glance: whether a
+   click on a notice is going to move it or open it. */
+.fqb-board__tools button.fqb-active {
+  border-color: var(--color-text-hyperlink, #7a5cff);
+  box-shadow: 0 0 6px rgb(122 92 255 / 60%);
+}
+
+.fqb-board__hint {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 4px 10px;
+  background: rgb(122 92 255 / 18%);
+  font-size: var(--font-size-12, 12px);
+  text-align: center;
+}
+
+/* The surface itself. Notices are positioned against this box in percentages,
+   so it has to be the positioning context and it has to clip — a notice dragged
+   to the edge should meet the frame, not spill into the window chrome. */
+.fqb-board__surface {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  box-shadow: inset 0 0 60px rgb(0 0 0 / 55%);
+}
+
+.fqb-board__empty {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px 16px;
+  border-radius: 4px;
+  background: rgb(0 0 0 / 45%);
+  color: rgb(255 255 255 / 80%);
+  font-style: italic;
+}
+
+/* ----------------------------------------------------------- board styles -- */
+
+/* Rough sawn planks, run vertically, with a darker rail top and bottom. */
+.fqb-board--rustic {
+  background-color: #6b4a2c;
+  background-image:
+    linear-gradient(180deg, rgb(0 0 0 / 45%) 0 14px, transparent 14px calc(100% - 14px), rgb(0 0 0 / 45%) calc(100% - 14px)),
+    repeating-linear-gradient(90deg, rgb(0 0 0 / 28%) 0 2px, rgb(255 255 255 / 4%) 2px 4px, transparent 4px 74px),
+    repeating-linear-gradient(0deg, rgb(0 0 0 / 6%) 0 3px, transparent 3px 9px);
+}
+
+/* Glazed, framed and lit from the top left — a board someone maintains. */
+.fqb-board--civic {
+  background-color: #3f4b57;
+  background-image:
+    linear-gradient(155deg, rgb(255 255 255 / 16%) 0 30%, transparent 62%),
+    repeating-linear-gradient(0deg, rgb(255 255 255 / 4%) 0 1px, transparent 1px 6px);
+  border: 10px solid #8a6a3c;
+  box-shadow: inset 0 0 40px rgb(0 0 0 / 60%);
+}
+
+/* Dark timber, close-boarded, iron-banded. Bounties hang here. */
+.fqb-board--guild {
+  background-color: #33241c;
+  background-image:
+    linear-gradient(180deg, rgb(0 0 0 / 55%) 0 10px, transparent 10px calc(100% - 10px), rgb(0 0 0 / 55%) calc(100% - 10px)),
+    repeating-linear-gradient(90deg, rgb(0 0 0 / 45%) 0 2px, transparent 2px 46px),
+    repeating-linear-gradient(0deg, rgb(255 255 255 / 3%) 0 2px, transparent 2px 7px);
+  box-shadow: inset 0 0 80px rgb(0 0 0 / 75%);
+}
+
+/* Smoke-stained plaster over old boards, darkest at the ceiling. */
+.fqb-board--tavern {
+  background-color: #5a3f2b;
+  background-image:
+    linear-gradient(180deg, rgb(0 0 0 / 55%), transparent 45%, rgb(0 0 0 / 30%)),
+    repeating-linear-gradient(90deg, rgb(0 0 0 / 18%) 0 1px, transparent 1px 30px),
+    radial-gradient(ellipse at 30% 20%, rgb(255 220 150 / 12%), transparent 60%);
+}
+
+/* Sun-bleached canvas, lashed and slightly slack. */
+.fqb-board--camp {
+  background-color: #9c8a63;
+  background-image:
+    repeating-linear-gradient(45deg, rgb(255 255 255 / 10%) 0 4px, transparent 4px 8px),
+    repeating-linear-gradient(-45deg, rgb(0 0 0 / 8%) 0 4px, transparent 4px 8px),
+    linear-gradient(180deg, rgb(255 255 255 / 10%), rgb(0 0 0 / 25%));
+}
+
+/* Nothing of its own: for a board that *is* its background image. */
+.fqb-board--plain {
+  background-color: #3a3a3a;
+}
+
+/* ---------------------------------------------------------------- notices -- */
+
+/*
+ * A notice is positioned by its centre so it can be dragged to any edge and
+ * clamped symmetrically, which is why the translate is baked into the transform
+ * alongside the tilt. `--fqb-rotation` is set inline per notice, and by the
+ * drag handler during a wheel-rotate.
+ */
+.fqb-notice {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 12px 10px;
+  transform: translate(-50%, -50%) rotate(var(--fqb-rotation, 0deg));
+  transform-origin: center;
+  color: #2b2118;
+  cursor: pointer;
+  filter: drop-shadow(2px 4px 5px rgb(0 0 0 / 55%));
+  font-family: Georgia, "Times New Roman", serif;
+  transition: transform 140ms ease, filter 140ms ease;
+}
+
+/* Hovering straightens a notice and lifts it clear of its neighbours — the
+   closest thing a screen has to picking one up off the board. */
+.fqb-notice:hover {
+  transform: translate(-50%, -50%) rotate(calc(var(--fqb-rotation, 0deg) * 0.35)) scale(1.06);
+  filter: drop-shadow(3px 7px 9px rgb(0 0 0 / 65%));
+  z-index: 500 !important;
+}
+
+.fqb-size--small { width: 145px; font-size: 11px; }
+.fqb-size--medium { width: 185px; font-size: 12px; }
+.fqb-size--large { width: 240px; font-size: 13px; }
+
+.fqb-notice__image {
+  overflow: hidden;
+  border: 1px solid rgb(0 0 0 / 35%);
+  background: rgb(0 0 0 / 10%);
+}
+
+.fqb-notice__image img {
+  display: block;
+  width: 100%;
+  height: 88px;
+  border: none;
+  object-fit: cover;
+  /* Old ink and older paper: a modern photograph pinned to a plank board is the
+     one thing that breaks the illusion hardest. */
+  filter: sepia(45%) contrast(108%) saturate(80%);
+}
+
+.fqb-notice__title {
+  margin: 0;
+  border: none;
+  font-size: 1.15em;
+  font-weight: bold;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.fqb-notice__excerpt {
+  margin: 0;
+  /* Four lines and then it stops: the close-up is where a notice is read, and a
+     board of full-length notices is a board you cannot see the shape of. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+  line-height: 1.3;
+}
+
+.fqb-notice__reward {
+  margin: 2px 0 0;
+  font-weight: bold;
+  text-align: center;
+}
+
+.fqb-notice__posted-by {
+  margin: 0;
+  font-size: 0.85em;
+  font-style: italic;
+  opacity: 0.75;
+  text-align: right;
+}
+
+.fqb-notice__link-mark {
+  position: absolute;
+  right: 5px;
+  bottom: 4px;
+  font-size: 0.8em;
+  opacity: 0.45;
+}
+
+.fqb-notice__badge {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1px 7px;
+  border-radius: 8px;
+  background: rgb(20 20 30 / 88%);
+  color: #ffd9a0;
+  font-family: var(--font-primary, "Signika"), sans-serif;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+/* A notice the players cannot see yet: still legible to the GM, but visibly not
+   part of the board the table is looking at. */
+.fqb-notice--unrevealed {
+  opacity: 0.62;
+  outline: 1px dashed rgb(255 255 255 / 55%);
+  outline-offset: 3px;
+}
+
+/* --------------------------------------------------------- notice templates -- */
+
+/* Torn, uneven edges come from a clip-path rather than an image — the same
+   trick for every paper template, with different jaggedness per stock. */
+.fqb-notice--parchment {
+  background: linear-gradient(160deg, #f3e3c0, #e3ceA1 55%, #d9c092);
+  background-color: #eddcb8;
+  box-shadow: inset 0 0 22px rgb(120 90 45 / 35%);
+}
+
+.fqb-notice--wanted {
+  background: linear-gradient(180deg, #efe0bb, #ddc79b);
+  box-shadow: inset 0 0 26px rgb(90 60 25 / 45%);
+  border: 3px double #4a3520;
+  text-transform: uppercase;
+}
+
+.fqb-notice--wanted .fqb-notice__title {
+  font-family: var(--font-h1, "Modesto Condensed"), Georgia, serif;
+  font-size: 1.5em;
+  letter-spacing: 0.06em;
+}
+
+.fqb-notice--wanted .fqb-notice__excerpt {
+  text-transform: none;
+}
+
+.fqb-notice--wanted .fqb-notice__reward {
+  padding-top: 4px;
+  border-top: 1px solid rgb(74 53 32 / 55%);
+  font-size: 1.15em;
+  letter-spacing: 0.04em;
+}
+
+.fqb-notice--note {
+  background: #f6f0dd;
+  box-shadow: inset 0 0 14px rgb(120 100 60 / 25%);
+  clip-path: polygon(2% 1%, 99% 0%, 98% 97%, 40% 100%, 1% 96%);
+  font-family: "Comic Sans MS", Georgia, cursive;
+}
+
+.fqb-notice--flyer {
+  background: #fbf6e8;
+  border: 1px solid #6b5a3a;
+  outline: 3px solid #fbf6e8;
+  outline-offset: -6px;
+  box-shadow: inset 0 0 0 1px rgb(107 90 58 / 40%);
+  font-family: var(--font-primary, "Signika"), sans-serif;
+}
+
+.fqb-notice--official {
+  background: linear-gradient(180deg, #fdf8ea, #f0e6cc);
+  border-top: 5px solid #7a2020;
+  box-shadow: inset 0 0 18px rgb(90 70 40 / 22%);
+}
+
+.fqb-notice--official .fqb-notice__title {
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.fqb-notice--napkin {
+  background: #fdfaf3;
+  box-shadow: inset 0 0 20px rgb(150 140 120 / 40%);
+  clip-path: polygon(3% 2%, 97% 0%, 100% 94%, 55% 99%, 8% 100%, 0% 60%);
+  color: #3a4a63;
+  font-family: "Comic Sans MS", Georgia, cursive;
+  font-style: italic;
+}
+
+/* -------------------------------------------------------------------- pins -- */
+
+/* The fastener is one empty span the templates decorate — a pin head, a nail, a
+   strip of tape across the top corner, a blob of wax. */
+.fqb-notice__fastener {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.fqb-pin--pin .fqb-notice__fastener {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ff8a7a, #b3241a 65%, #6d1109);
+  box-shadow: 0 2px 3px rgb(0 0 0 / 55%);
+}
+
+.fqb-pin--nail .fqb-notice__fastener {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #d8d8d8, #6e6e6e 60%, #333);
+  box-shadow: 0 2px 3px rgb(0 0 0 / 60%);
+}
+
+.fqb-pin--tape .fqb-notice__fastener {
+  top: -10px;
+  width: 46px;
+  height: 20px;
+  transform: translateX(-50%) rotate(-6deg);
+  background: rgb(230 225 200 / 62%);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 30%);
+}
+
+.fqb-pin--wax .fqb-notice__fastener {
+  width: 20px;
+  height: 18px;
+  border-radius: 48% 52% 45% 55%;
+  background: radial-gradient(circle at 40% 35%, #d9564c, #8c1c16 70%);
+  box-shadow: 0 2px 3px rgb(0 0 0 / 55%);
+}
+
+.fqb-pin--none .fqb-notice__fastener {
+  display: none;
+}
+
+/* --------------------------------------------------------------- arranging -- */
+
+/* While arranging, a notice is a thing you grab, so it says so — and it must not
+   also behave like a link, which is why the click handler ignores `read` in this
+   mode rather than the CSS trying to swallow the event. */
+.fqb-arranging .fqb-notice {
+  cursor: grab;
+  transition: none;
+}
+
+.fqb-arranging .fqb-notice:hover {
+  transform: translate(-50%, -50%) rotate(var(--fqb-rotation, 0deg));
+  outline: 2px solid rgb(122 92 255 / 80%);
+  outline-offset: 2px;
+}
+
+.fqb-arranging .fqb-notice:active {
+  cursor: grabbing;
+}
+
+/* Per-notice GM buttons, only while arranging. Kept outside the paper so they
+   do not have to be styled against six different stocks. */
+.fqb-notice__tools {
+  position: absolute;
+  top: -12px;
+  right: -10px;
+  display: flex;
+  gap: 2px;
+}
+
+.fqb-notice__tools button {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid rgb(0 0 0 / 45%);
+  border-radius: 3px;
+  background: rgb(25 25 32 / 92%);
+  color: #f0e6d2;
+  font-size: 11px;
+  line-height: 20px;
+}
+
+.fqb-notice__tools button:hover {
+  background: rgb(45 45 60 / 95%);
+  box-shadow: none;
+}
+
+/* ----------------------------------------------------------------- close-up -- */
+
+.fqb-notice-window .window-content {
+  padding: 10px;
+}
+
+.fqb-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fqb-detail__missing {
+  padding: 12px;
+  font-style: italic;
+  opacity: 0.75;
+}
+
+/* The same stock as the pinned notice, at reading size and without the tilt:
+   this is the notice in your hands rather than on the wall. */
+.fqb-detail__sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 20px;
+  color: #2b2118;
+  filter: drop-shadow(0 3px 6px rgb(0 0 0 / 45%));
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: var(--font-size-14, 14px);
+  line-height: 1.45;
+}
+
+.fqb-detail__image img {
+  display: block;
+  width: 100%;
+  max-height: 260px;
+  border: 1px solid rgb(0 0 0 / 35%);
+  object-fit: cover;
+  filter: sepia(45%) contrast(108%) saturate(80%);
+}
+
+.fqb-detail__title {
+  margin: 0;
+  border: none;
+  font-size: 1.6em;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.fqb-detail__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fqb-detail__paragraph {
+  margin: 0;
+  /* Newlines inside a paragraph are the GM's line breaks — a verse, an address,
+     a list of names — and collapsing them would rewrite the notice. */
+  white-space: pre-wrap;
+}
+
+.fqb-detail__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 8px;
+  border-top: 1px solid rgb(60 45 25 / 40%);
+}
+
+.fqb-detail__footer p {
+  margin: 0;
+}
+
+.fqb-detail__label {
+  font-weight: bold;
+  opacity: 0.7;
+}
+
+.fqb-detail__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fqb-detail__board {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--font-size-12, 12px);
+  font-style: italic;
+  opacity: 0.7;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fqb-detail__actions button {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+.fqb-detail__broken {
+  flex: 0 0 auto;
+  color: var(--color-level-error, #b34b4b);
+  font-size: var(--font-size-12, 12px);
+}

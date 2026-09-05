@@ -1,0 +1,18 @@
+# Keep this repo LF end to end, in the index and in the working tree.
+#
+# `core.autocrlf` is true on the development machine here, which normalizes on
+# commit but writes CRLF back out on checkout — that is how the sibling
+# Utility Suite repo ended up a per-file mix of CRLF and LF, and why editing a
+# file there means sniffing its line endings first. Pinning `eol=lf` means a
+# fresh clone matches what is committed and nothing has to be sniffed.
+* text=auto eol=lf
+
+# Never touched by the normalizer.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.webm binary
+*.ogg binary
+*.mp3 binary

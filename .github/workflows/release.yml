@@ -1,0 +1,67 @@
+name: Release
+
+# Publishes a Foundry-installable release whenever a v* tag is pushed.
+#
+#   git tag v0.1.0 && git push origin v0.1.0
+#
+# The tag is the source of truth for the version: module.json's `version` and
+# `download` fields are rewritten from it before packaging, so the manifest that
+# Foundry fetches always agrees with the zip sitting next to it.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # dist/ is gitignored, so the release zip can only be produced here.
+      - run: npm run build
+
+      - name: Stamp version and download URL into module.json
+        env:
+          TAG: ${{ github.ref_name }}
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+        run: |
+          VERSION="${TAG#v}"
+          jq --arg version "$VERSION" \
+             --arg download "$REPO_URL/releases/download/$TAG/module.zip" \
+             --arg manifest "$REPO_URL/releases/latest/download/module.json" \
+             --arg url "$REPO_URL" \
+             '.version = $version | .download = $download | .manifest = $manifest | .url = $url' \
+             module.json > module.json.tmp
+          mv module.json.tmp module.json
+          cat module.json
+
+      - name: Package module.zip
+        run: |
+          zip -r module.zip \
+            module.json \
+            dist \
+            lang \
+            styles \
+            templates \
+            packs \
+            README.md
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            module.json module.zip \
+            --title "${{ github.ref_name }}" \
+            --generate-notes

@@ -1,0 +1,139 @@
+{{!-- One notice's fields. One root element (ApplicationV2 requires exactly one
+     per part) — Save/Cancel are the shared config-footer part.
+
+     There is no position control: a notice is placed by dragging it on the
+     board, where you can see what it lands beside. Tilt is here because a
+     slider is as good as the wheel gesture and easier to find. --}}
+<div class="fqb-config-body">
+
+  <p class="hint">{{localize "FQB.NoticeEditor.OnBoard"}} {{boardName}}</p>
+
+  <div class="form-group">
+    <label for="fqb-notice-title">{{localize "FQB.NoticeEditor.TitleLabel"}}</label>
+    <div class="form-fields">
+      <input type="text" id="fqb-notice-title" name="title" value="{{title}}"
+             placeholder="{{localize "FQB.NoticeEditor.TitlePlaceholder"}}">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="fqb-notice-text">{{localize "FQB.NoticeEditor.TextLabel"}}</label>
+    <div class="form-fields">
+      <textarea id="fqb-notice-text" name="text" rows="5"
+                placeholder="{{localize "FQB.NoticeEditor.TextPlaceholder"}}">{{text}}</textarea>
+    </div>
+    <p class="hint">{{localize "FQB.NoticeEditor.TextHint"}}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="fqb-notice-image">{{localize "FQB.NoticeEditor.ImageLabel"}}</label>
+    <div class="form-fields">
+      <file-picker type="image" id="fqb-notice-image" name="image" value="{{image}}"></file-picker>
+    </div>
+    <p class="hint">{{localize "FQB.NoticeEditor.ImageHint"}}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="fqb-notice-reward">{{localize "FQB.NoticeEditor.RewardLabel"}}</label>
+    <div class="form-fields">
+      <input type="text" id="fqb-notice-reward" name="reward" value="{{reward}}"
+             placeholder="{{localize "FQB.NoticeEditor.RewardPlaceholder"}}">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="fqb-notice-posted-by">{{localize "FQB.NoticeEditor.PostedByLabel"}}</label>
+    <div class="form-fields">
+      <input type="text" id="fqb-notice-posted-by" name="postedBy" value="{{postedBy}}"
+             placeholder="{{localize "FQB.NoticeEditor.PostedByPlaceholder"}}">
+    </div>
+  </div>
+
+  {{!-- The link field is a drop target: drag a journal entry (or any document)
+       from a sidebar onto it. Typing a UUID is the fallback, not the gesture. --}}
+  <div class="form-group fqb-link-drop">
+    <label for="fqb-notice-link">{{localize "FQB.NoticeEditor.LinkLabel"}}</label>
+    <div class="form-fields fqb-link-field">
+      {{#if resolvedLink}}
+        <span class="fqb-link-chip {{#unless resolvedLink.valid}}fqb-link-chip--broken{{/unless}}">
+          {{#if resolvedLink.valid}}
+            <i class="fa-solid fa-link"></i>
+          {{else}}
+            <i class="fa-solid fa-link-slash"></i>
+          {{/if}}
+          {{resolvedLink.name}}
+        </span>
+        {{#if resolvedLink.valid}}
+          <button type="button" data-fqb="open-link"
+                  data-tooltip="{{localize "FQB.NoticeEditor.OpenLink"}}"
+                  aria-label="{{localize "FQB.NoticeEditor.OpenLink"}}">
+            <i class="fa-solid fa-up-right-from-square"></i>
+          </button>
+        {{/if}}
+        <button type="button" data-fqb="clear-link"
+                data-tooltip="{{localize "FQB.NoticeEditor.ClearLink"}}"
+                aria-label="{{localize "FQB.NoticeEditor.ClearLink"}}">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      {{else}}
+        <span class="fqb-link-chip fqb-link-chip--empty">
+          <i class="fa-solid fa-arrow-down-to-line"></i>
+          {{localize "FQB.NoticeEditor.LinkEmpty"}}
+        </span>
+      {{/if}}
+    </div>
+    <p class="hint">{{localize "FQB.NoticeEditor.LinkHint"}}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="fqb-notice-template">{{localize "FQB.NoticeEditor.TemplateLabel"}}</label>
+    <div class="form-fields">
+      <select id="fqb-notice-template" name="template">
+        {{#each templates}}
+          <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{localize this.label}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="fqb-notice-pin">{{localize "FQB.NoticeEditor.PinLabel"}}</label>
+    <div class="form-fields">
+      <select id="fqb-notice-pin" name="pin">
+        {{#each pins}}
+          <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{localize this.label}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="fqb-notice-size">{{localize "FQB.NoticeEditor.SizeLabel"}}</label>
+    <div class="form-fields">
+      <select id="fqb-notice-size" name="size">
+        {{#each sizes}}
+          <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{localize this.label}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="fqb-notice-rotation">{{localize "FQB.NoticeEditor.RotationLabel"}}</label>
+    <div class="form-fields fqb-rotation-field">
+      <input type="range" id="fqb-notice-rotation" name="rotation" value="{{rotation}}"
+             min="{{rotationMin}}" max="{{rotationMax}}" step="1">
+      <span class="fqb-rotation-value">{{rotation}}°</span>
+    </div>
+    <p class="hint">{{localize "FQB.NoticeEditor.RotationHint"}}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="fqb-notice-hidden">{{localize "FQB.NoticeEditor.HiddenLabel"}}</label>
+    <div class="form-fields">
+      <input type="checkbox" id="fqb-notice-hidden" name="hidden" {{#if hidden}}checked{{/if}}>
+    </div>
+    <p class="hint">{{localize "FQB.NoticeEditor.HiddenHint"}}</p>
+  </div>
+
+</div>

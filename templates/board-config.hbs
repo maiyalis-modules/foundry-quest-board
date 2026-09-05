@@ -1,0 +1,48 @@
+{{!-- The settings window body. One root element, since ApplicationV2 requires
+     each part to render exactly one — Save/Cancel are the shared config-footer
+     part, not embedded here. --}}
+<div class="fqb-config-body">
+
+  <div class="form-group">
+    <label for="fqb-show-journal-button">{{localize "FQB.Settings.ShowJournalButtonName"}}</label>
+    <div class="form-fields">
+      <input type="checkbox" id="fqb-show-journal-button" name="showJournalButton"
+             {{#if showJournalButton}}checked{{/if}}>
+    </div>
+    <p class="hint">{{localize "FQB.Settings.ShowJournalButtonHint"}}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="fqb-players-can-browse">{{localize "FQB.Settings.PlayersCanBrowseName"}}</label>
+    <div class="form-fields">
+      <input type="checkbox" id="fqb-players-can-browse" name="playersCanBrowse"
+             {{#if playersCanBrowse}}checked{{/if}}>
+    </div>
+    <p class="hint">{{localize "FQB.Settings.PlayersCanBrowseHint"}}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="fqb-default-board-style">{{localize "FQB.Settings.DefaultBoardStyleName"}}</label>
+    <div class="form-fields">
+      <select id="fqb-default-board-style" name="defaultBoardStyle">
+        {{#each styles}}
+          <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{localize this.label}}</option>
+        {{/each}}
+      </select>
+    </div>
+    <p class="hint">{{localize "FQB.Settings.DefaultBoardStyleHint"}}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="fqb-default-template">{{localize "FQB.Settings.DefaultTemplateName"}}</label>
+    <div class="form-fields">
+      <select id="fqb-default-template" name="defaultTemplate">
+        {{#each templates}}
+          <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{localize this.label}}</option>
+        {{/each}}
+      </select>
+    </div>
+    <p class="hint">{{localize "FQB.Settings.DefaultTemplateHint"}}</p>
+  </div>
+
+</div>

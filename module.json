@@ -1,0 +1,34 @@
+{
+  "id": "foundry-quest-board",
+  "title": "Maiyalis: Quest Board",
+  "description": "Immersive notice boards for your world. Build as many boards as you have towns — a village noticeboard of hand-scrawled scraps, a guild wall of wanted posters, a municipal frame of official seals — pin parchment notices, wanted posters, rumours and jobs to them, and show one to the table for the players to browse. Each notice can link to a Journal entry or a quest from any other module. System-agnostic.",
+  "version": "1.1.0",
+  "authors": [
+    {
+      "name": "Brenton",
+      "email": "brenton.morse@gmail.com"
+    }
+  ],
+  "compatibility": {
+    "minimum": "14",
+    "verified": "14"
+  },
+  "esmodules": [
+    "dist/module.js"
+  ],
+  "styles": [
+    "styles/module.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "packs": [],
+  "socket": false,
+  "url": "https://github.com/maiyalis-modules/foundry-quest-board",
+  "manifest": "https://github.com/maiyalis-modules/foundry-quest-board/releases/latest/download/module.json",
+  "download": "https://github.com/maiyalis-modules/foundry-quest-board/releases/download/v1.1.0/module.zip"
+}
