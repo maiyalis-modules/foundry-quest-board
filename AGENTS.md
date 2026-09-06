@@ -311,6 +311,28 @@ board it has.
   binding with a `data-fqb-bound` flag on the root so re-renders do not stack
   listeners — and **clear that flag when the app closes** if the app can be
   re-shown (see `BoardApp.close`), or the next render leaves it inert.
+- **Never give an ApplicationV2 a fixed `id` if it can be constructed twice.**
+  `foundry.applications.instances` is keyed by id, so the second instance
+  overwrites the first and the loser is orphaned: still on screen, but no longer
+  the app Foundry positions or attaches frame listeners to. **The symptom is a
+  window stuck in the top-left corner that cannot be dragged**, and it looks
+  nothing like an id problem — the registered instance reports a perfectly
+  sensible `position` and a `null` `element`, which is the tell:
+
+  ```js
+  const a = foundry.applications.instances.get("<the id>");
+  console.log(a?.position, a?.element);   // sane position + null element
+  ```
+
+  Anything opened on demand takes a per-instance id (`…-board-editor-${board.id}`)
+  and a static `open()` that hands back the already-open one — `BoardEditorApp`,
+  `NoticeEditorApp`, `BoardApp`, `NoticeApp` all do. Check against
+  `foundry.applications.instances` rather than a map of our own; a second
+  registry is a second thing to keep in step. A fixed id is only safe for a true
+  singleton like `BoardLibraryApp`, which is constructed once during `init` and
+  re-rendered thereafter. **`QuestBoardConfig` keeps a fixed id and is the one
+  remaining exposure** — Foundry's settings menu constructs it directly, so there
+  is no `open()` to route through; if it ever sticks in the corner, that is why.
 - **Handlebars**: no `{{else if}}` and no `eq` helper here — precompute booleans
   in `_prepareContext` (that is why every select context carries a `selected`
   flag per option) and use nested `{{#if}}`/`{{else}}`.

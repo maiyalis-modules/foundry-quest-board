@@ -117,7 +117,9 @@ export class BoardLibraryApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   private openEditor(board: Board): void {
-    new BoardEditorApp(board, () => void this.render()).render(true);
+    // Through `open()`, never `new`: it keys the editor by board id, which is
+    // what stops two of them colliding in Foundry's instance registry.
+    BoardEditorApp.open(board, () => void this.render());
   }
 
   private createBoard(): void {

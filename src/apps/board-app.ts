@@ -559,11 +559,11 @@ export class BoardApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const board = BoardStore.get(this.boardId);
     if (!board) return;
     const notice = emptyNotice(board.notices.length, defaultTemplate());
-    new NoticeEditorApp(notice, true, board.name, (edited, addAnother) => {
+    NoticeEditorApp.open(notice, true, board.name, (edited, addAnother) => {
       void this.appendNotice(edited).then(() => {
         if (addAnother) this.addNotice();
       });
-    }).render(true);
+    });
   }
 
   private async appendNotice(notice: Notice): Promise<void> {
@@ -578,9 +578,9 @@ export class BoardApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const board = BoardStore.get(this.boardId);
     const notice = board?.notices.find((item) => item.id === noticeId);
     if (!board || !notice) return;
-    new NoticeEditorApp(notice, false, board.name, (edited) => {
+    NoticeEditorApp.open(notice, false, board.name, (edited) => {
       void BoardStore.updateNotice(this.boardId, noticeId, edited);
-    }).render(true);
+    });
   }
 
   /** Reveal an unrevealed notice to the players, or take one back out of sight. */

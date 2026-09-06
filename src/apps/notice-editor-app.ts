@@ -54,9 +54,12 @@ export class NoticeEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
   /** Held here rather than read off a control: the link field is a drop target. */
   private link: string;
 
-  // No `id` here: it is set per instance in the constructor. Save & Add closes
+  // No `id` here: it is set per notice in the constructor. Save & Add closes
   // this window and opens the next one immediately, and two ApplicationV2s
-  // sharing an id while one is still tearing down is a race worth not having.
+  // sharing an id while one is still tearing down is a race worth not having —
+  // the loser is orphaned in `foundry.applications.instances`, which leaves it
+  // on screen but unpositioned and undraggable. {@link open} covers the other
+  // half of that: two editors for the *same* notice.
   static DEFAULT_OPTIONS: AnyObject = {
     tag: "form",
     classes: [MODULE_ID, "fqb-config", "standard-form"],
@@ -94,6 +97,29 @@ export class NoticeEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
     this.boardName = boardName;
     this.onSubmit = onSubmit;
     this.link = notice.link;
+  }
+
+  /**
+   * Edit a notice, or bring its already-open editor forward.
+   *
+   * Checked against `foundry.applications.instances` — Foundry's own registry,
+   * where the collision would happen — rather than a map of our own. Clicking a
+   * notice's edit button twice is all it takes.
+   */
+  static open(
+    notice: Notice,
+    isNew: boolean,
+    boardName: string,
+    onSubmit: NoticeSubmit,
+  ): void {
+    const existing = foundry.applications.instances.get(
+      `${MODULE_ID}-notice-editor-${notice.id}`,
+    );
+    if (existing) {
+      void existing["render"](true);
+      return;
+    }
+    void new NoticeEditorApp(notice, isNew, boardName, onSubmit).render(true);
   }
 
   async _prepareContext(options: AnyObject): Promise<AnyObject> {

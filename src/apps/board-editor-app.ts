@@ -37,8 +37,17 @@ export class BoardEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
   private draft: Board;
   private readonly onSaved: () => void;
 
+  // No `id` here: it is set per board in the constructor.
+  //
+  // A fixed one is a real bug, not a tidiness point. `foundry.applications
+  // .instances` is keyed by id, so a second editor overwrites the first there
+  // and the first is orphaned — still on screen, but no longer the app Foundry
+  // positions or attaches its frame listeners to. What that looks like is a
+  // window stuck in the top-left corner that cannot be dragged, while the
+  // registered instance reports a perfectly sensible `position` and a null
+  // `element`. The notice editor has always been keyed per instance for the
+  // same reason; this one was missed.
   static DEFAULT_OPTIONS: AnyObject = {
-    id: `${MODULE_ID}-board-editor`,
     tag: "form",
     classes: [MODULE_ID, "fqb-config", "standard-form"],
     window: {
@@ -58,12 +67,36 @@ export class BoardEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
   };
 
   constructor(board: Board, onSaved: () => void, options: AnyObject = {}) {
-    super(options);
+    super({ id: `${MODULE_ID}-board-editor-${board.id}`, ...options });
     // Deep-ish copy: the notice objects are replaced wholesale by the notice
     // editor, so copying the array and each notice is enough to keep the stored
     // board untouched until Save.
     this.draft = { ...board, notices: board.notices.map((notice) => ({ ...notice })) };
     this.onSaved = onSaved;
+  }
+
+  /**
+   * Edit a board, or bring its already-open editor forward.
+   *
+   * Per-board ids stop two editors *for different boards* colliding; this stops
+   * two editors for the **same** board existing at all, which would be two
+   * drafts of one board racing to be saved last. Every way into the editor goes
+   * through here.
+   *
+   * The check is against `foundry.applications.instances` — Foundry's own
+   * registry, the one the collision happens in — rather than a map of our own.
+   * A second registry would be a second thing to keep in step, and this one is
+   * already authoritative.
+   */
+  static open(board: Board, onSaved: () => void): void {
+    const existing = foundry.applications.instances.get(
+      `${MODULE_ID}-board-editor-${board.id}`,
+    );
+    if (existing) {
+      void existing["render"](true);
+      return;
+    }
+    void new BoardEditorApp(board, onSaved).render(true);
   }
 
   async _prepareContext(options: AnyObject): Promise<AnyObject> {
@@ -179,7 +212,7 @@ export class BoardEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
    */
   private addNotice(): void {
     this.capture();
-    new NoticeEditorApp(
+    NoticeEditorApp.open(
       emptyNotice(this.draft.notices.length, this.defaultTemplate()),
       true,
       this.draft.name,
@@ -188,7 +221,7 @@ export class BoardEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
         void this.render();
         if (addAnother) this.addNotice();
       },
-    ).render(true);
+    );
   }
 
   private editNotice(id: string): void {
@@ -196,10 +229,10 @@ export class BoardEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const index = this.draft.notices.findIndex((notice) => notice.id === id);
     const notice = this.draft.notices[index];
     if (!notice) return;
-    new NoticeEditorApp(notice, false, this.draft.name, (edited) => {
+    NoticeEditorApp.open(notice, false, this.draft.name, (edited) => {
       this.draft.notices[index] = edited;
       void this.render();
-    }).render(true);
+    });
   }
 
   private removeNotice(id: string): void {
