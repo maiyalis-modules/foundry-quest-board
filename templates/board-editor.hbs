@@ -2,8 +2,16 @@
      to it. Everything here edits the app's draft copy and re-renders; only the
      footer's Save writes it back to the library (see apps/board-editor-app.ts).
 
-     The list is the stacking order, not the layout — where a notice sits on the
-     board is set by dragging it in the board's Arrange mode. --}}
+     Two fieldsets. "Board" is the look, as two tabs — Template (a theme, and a
+     variant when the theme has more than one) or Custom (the GM's own image) —
+     with a live preview under both. The active tab IS `Board.surface`, stored
+     on the draft, so switching is a re-render rather than a class toggle and
+     the preview follows. "Notices" is the stacking order, not the layout:
+     where a notice sits on the board is set by dragging it in Arrange mode.
+
+     Tab switching goes through our delegated click (`data-fqb="tab"`) rather
+     than ApplicationV2's `data-action="tab"`, for the reason in AGENTS.md; the
+     class names are Foundry's so `standard-form` styles them. --}}
 <div class="fqb-config-body fqb-editor">
 
   <div class="form-group">
@@ -23,53 +31,6 @@
     <p class="hint">{{localize "FQB.Editor.SubtitleHint"}}</p>
   </div>
 
-  {{!-- Two selects for one field. `Board.style` is a single string; the theme
-       select narrows it and the variant select — only shown for an illustrated
-       theme with more than one — picks within it. apps/board-editor-app.ts
-       reads the pair back into the string (`styleFromControls`). Labels are
-       already localized in the context, since a theme's name can fall back
-       to its slug. --}}
-  <div class="form-group">
-    <label for="fqb-board-theme">{{localize "FQB.Editor.StyleLabel"}}</label>
-    <div class="form-fields">
-      <select id="fqb-board-theme" name="theme">
-        <optgroup label="{{localize "FQB.Editor.ThemeGroupIllustrated"}}">
-          {{#each themes}}
-            <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
-          {{/each}}
-        </optgroup>
-        <optgroup label="{{localize "FQB.Editor.ThemeGroupProcedural"}}">
-          {{#each proceduralStyles}}
-            <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
-          {{/each}}
-        </optgroup>
-      </select>
-    </div>
-    <p class="hint">{{localize "FQB.Editor.StyleHint"}}</p>
-  </div>
-
-  {{#if hasVariants}}
-    <div class="form-group">
-      <label for="fqb-board-variant">{{localize "FQB.Editor.VariantLabel"}}</label>
-      <div class="form-fields">
-        <select id="fqb-board-variant" name="variant">
-          {{#each variants}}
-            <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
-          {{/each}}
-        </select>
-      </div>
-      <p class="hint">{{localize "FQB.Editor.VariantHint"}}</p>
-    </div>
-  {{/if}}
-
-  <div class="form-group">
-    <label for="fqb-board-background">{{localize "FQB.Editor.BackgroundLabel"}}</label>
-    <div class="form-fields">
-      <file-picker type="image" id="fqb-board-background" name="background" value="{{background}}"></file-picker>
-    </div>
-    <p class="hint">{{localize "FQB.Editor.BackgroundHint"}}</p>
-  </div>
-
   <div class="form-group">
     <label for="fqb-board-player-visible">{{localize "FQB.Editor.PlayerVisibleLabel"}}</label>
     <div class="form-fields">
@@ -79,81 +40,167 @@
     <p class="hint">{{localize "FQB.Editor.PlayerVisibleHint"}}</p>
   </div>
 
-  <div class="fqb-editor__toolbar">
-    <span class="fqb-editor__heading">{{localize "FQB.Editor.Notices"}}</span>
-    <button type="button" data-fqb="add-notice">
-      <i class="fa-solid fa-plus"></i>
-      {{localize "FQB.Editor.AddNotice"}}
-    </button>
-  </div>
+  <fieldset class="fqb-editor__section">
+    <legend>{{localize "FQB.Editor.SurfaceLegend"}}</legend>
 
-  {{#if empty}}
-    <p class="hint">{{localize "FQB.Editor.NoNotices"}}</p>
-  {{else}}
-    <ol class="fqb-editor__list">
-      {{#each notices}}
-        <li class="fqb-editor__row {{#if this.hidden}}fqb-editor__row--hidden{{/if}}"
-            data-notice-id="{{this.id}}">
-          <span class="fqb-editor__number">{{this.number}}</span>
+    <nav class="sheet-tabs tabs fqb-editor__tabs" data-group="surface">
+      <a class="item {{#if surfaceIsTemplate}}active{{/if}}" data-fqb="tab" data-tab="template">
+        <i class="fa-solid fa-images"></i>
+        {{localize "FQB.Editor.TabTemplate"}}
+      </a>
+      <a class="item {{#if surfaceIsCustom}}active{{/if}}" data-fqb="tab" data-tab="custom">
+        <i class="fa-solid fa-file-image"></i>
+        {{localize "FQB.Editor.TabCustom"}}
+      </a>
+    </nav>
 
-          <div class="fqb-editor__thumb">
-            {{#if this.image}}
-              <img src="{{this.image}}" alt="">
-            {{else}}
-              <i class="fa-solid fa-scroll"></i>
-            {{/if}}
+    <section class="tab fqb-editor__tab {{#if surfaceIsTemplate}}active{{/if}}"
+             data-tab="template" data-group="surface">
+      {{!-- Two selects for one field. `Board.style` is a single string; the
+           theme select narrows it and the variant select — only shown for an
+           illustrated theme with more than one — picks within it.
+           `styleFromControls` in the app reads the pair back into the string.
+           Labels are already localized in the context, since a theme's name
+           can fall back to its slug. --}}
+      <div class="form-group">
+        <label for="fqb-board-theme">{{localize "FQB.Editor.StyleLabel"}}</label>
+        <div class="form-fields">
+          <select id="fqb-board-theme" name="theme">
+            <optgroup label="{{localize "FQB.Editor.ThemeGroupIllustrated"}}">
+              {{#each themes}}
+                <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+              {{/each}}
+            </optgroup>
+            <optgroup label="{{localize "FQB.Editor.ThemeGroupProcedural"}}">
+              {{#each proceduralStyles}}
+                <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+              {{/each}}
+            </optgroup>
+          </select>
+        </div>
+        <p class="hint">{{localize "FQB.Editor.StyleHint"}}</p>
+      </div>
+
+      {{#if hasVariants}}
+        <div class="form-group">
+          <label for="fqb-board-variant">{{localize "FQB.Editor.VariantLabel"}}</label>
+          <div class="form-fields">
+            <select id="fqb-board-variant" name="variant">
+              {{#each variants}}
+                <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+              {{/each}}
+            </select>
           </div>
+          <p class="hint">{{localize "FQB.Editor.VariantHint"}}</p>
+        </div>
+      {{/if}}
+    </section>
 
-          <div class="fqb-editor__meta">
-            <span class="fqb-editor__summary">{{this.summary}}</span>
-            <span class="fqb-editor__tags">
-              {{localize this.templateLabel}}
-              {{#if this.reward}} · {{this.reward}}{{/if}}
-              {{#if this.hasLink}}
-                <i class="fa-solid fa-link" data-tooltip="{{localize "FQB.Editor.LinkedTooltip"}}"></i>
-              {{/if}}
-              {{#if this.hidden}}
-                <i class="fa-solid fa-eye-slash" data-tooltip="{{localize "FQB.Editor.HiddenTooltip"}}"></i>
-              {{/if}}
-            </span>
-          </div>
+    <section class="tab fqb-editor__tab {{#if surfaceIsCustom}}active{{/if}}"
+             data-tab="custom" data-group="surface">
+      <div class="form-group">
+        <label for="fqb-board-background">{{localize "FQB.Editor.BackgroundLabel"}}</label>
+        <div class="form-fields">
+          <file-picker type="image" id="fqb-board-background" name="background" value="{{background}}"></file-picker>
+        </div>
+        <p class="hint">{{localize "FQB.Editor.BackgroundHint"}}</p>
+      </div>
+    </section>
 
-          <div class="fqb-editor__actions">
-            <button type="button" data-fqb="toggle-hidden" data-notice-id="{{this.id}}"
-                    data-tooltip="{{localize "FQB.Editor.ToggleHidden"}}"
-                    aria-label="{{localize "FQB.Editor.ToggleHidden"}}">
-              {{#if this.hidden}}
-                <i class="fa-solid fa-eye-slash"></i>
+    {{!-- The board, small. The same surface / art / pinnable structure the
+         board renders with, from the same `surfaceContext`, so this is the
+         board rather than a picture of one — and the dashed line is the panel
+         notices will land on, which is the thing worth seeing before choosing.
+         `preview.background` is empty unless the Custom look is in use. --}}
+    <div class="fqb-editor__preview">
+      <div class="fqb-board__surface {{preview.boardClass}} {{#if preview.background}}fqb-board--custom{{/if}}">
+        <div class="fqb-board__art"
+             {{#if preview.background}}style="background-image: url('{{preview.background}}');"{{else}}{{#if preview.artStyle}}style="{{preview.artStyle}}"{{/if}}{{/if}}>
+          <div class="fqb-board__pinnable"></div>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset class="fqb-editor__section">
+    <legend>{{localize "FQB.Editor.Notices"}}</legend>
+
+    <div class="fqb-editor__toolbar">
+      <span class="fqb-editor__heading">{{localize "FQB.Editor.NoticesOrderHint"}}</span>
+      <button type="button" data-fqb="add-notice">
+        <i class="fa-solid fa-plus"></i>
+        {{localize "FQB.Editor.AddNotice"}}
+      </button>
+    </div>
+
+    {{#if empty}}
+      <p class="hint">{{localize "FQB.Editor.NoNotices"}}</p>
+    {{else}}
+      <ol class="fqb-editor__list">
+        {{#each notices}}
+          <li class="fqb-editor__row {{#if this.hidden}}fqb-editor__row--hidden{{/if}}"
+              data-notice-id="{{this.id}}">
+            <span class="fqb-editor__number">{{this.number}}</span>
+
+            <div class="fqb-editor__thumb">
+              {{#if this.image}}
+                <img src="{{this.image}}" alt="">
               {{else}}
-                <i class="fa-solid fa-eye"></i>
+                <i class="fa-solid fa-scroll"></i>
               {{/if}}
-            </button>
-            <button type="button" data-fqb="move-up" data-notice-id="{{this.id}}"
-                    {{#if this.isFirst}}disabled{{/if}}
-                    data-tooltip="{{localize "FQB.Editor.MoveUp"}}"
-                    aria-label="{{localize "FQB.Editor.MoveUp"}}">
-              <i class="fa-solid fa-chevron-up"></i>
-            </button>
-            <button type="button" data-fqb="move-down" data-notice-id="{{this.id}}"
-                    {{#if this.isLast}}disabled{{/if}}
-                    data-tooltip="{{localize "FQB.Editor.MoveDown"}}"
-                    aria-label="{{localize "FQB.Editor.MoveDown"}}">
-              <i class="fa-solid fa-chevron-down"></i>
-            </button>
-            <button type="button" data-fqb="edit-notice" data-notice-id="{{this.id}}"
-                    data-tooltip="{{localize "FQB.Editor.EditNotice"}}"
-                    aria-label="{{localize "FQB.Editor.EditNotice"}}">
-              <i class="fa-solid fa-pen-to-square"></i>
-            </button>
-            <button type="button" data-fqb="remove-notice" data-notice-id="{{this.id}}"
-                    data-tooltip="{{localize "FQB.Editor.RemoveNotice"}}"
-                    aria-label="{{localize "FQB.Editor.RemoveNotice"}}">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </div>
-        </li>
-      {{/each}}
-    </ol>
-  {{/if}}
+            </div>
+
+            <div class="fqb-editor__meta">
+              <span class="fqb-editor__summary">{{this.summary}}</span>
+              <span class="fqb-editor__tags">
+                {{localize this.templateLabel}}
+                {{#if this.reward}} · {{this.reward}}{{/if}}
+                {{#if this.hasLink}}
+                  <i class="fa-solid fa-link" data-tooltip="{{localize "FQB.Editor.LinkedTooltip"}}"></i>
+                {{/if}}
+                {{#if this.hidden}}
+                  <i class="fa-solid fa-eye-slash" data-tooltip="{{localize "FQB.Editor.HiddenTooltip"}}"></i>
+                {{/if}}
+              </span>
+            </div>
+
+            <div class="fqb-editor__actions">
+              <button type="button" data-fqb="toggle-hidden" data-notice-id="{{this.id}}"
+                      data-tooltip="{{localize "FQB.Editor.ToggleHidden"}}"
+                      aria-label="{{localize "FQB.Editor.ToggleHidden"}}">
+                {{#if this.hidden}}
+                  <i class="fa-solid fa-eye-slash"></i>
+                {{else}}
+                  <i class="fa-solid fa-eye"></i>
+                {{/if}}
+              </button>
+              <button type="button" data-fqb="move-up" data-notice-id="{{this.id}}"
+                      {{#if this.isFirst}}disabled{{/if}}
+                      data-tooltip="{{localize "FQB.Editor.MoveUp"}}"
+                      aria-label="{{localize "FQB.Editor.MoveUp"}}">
+                <i class="fa-solid fa-chevron-up"></i>
+              </button>
+              <button type="button" data-fqb="move-down" data-notice-id="{{this.id}}"
+                      {{#if this.isLast}}disabled{{/if}}
+                      data-tooltip="{{localize "FQB.Editor.MoveDown"}}"
+                      aria-label="{{localize "FQB.Editor.MoveDown"}}">
+                <i class="fa-solid fa-chevron-down"></i>
+              </button>
+              <button type="button" data-fqb="edit-notice" data-notice-id="{{this.id}}"
+                      data-tooltip="{{localize "FQB.Editor.EditNotice"}}"
+                      aria-label="{{localize "FQB.Editor.EditNotice"}}">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button type="button" data-fqb="remove-notice" data-notice-id="{{this.id}}"
+                      data-tooltip="{{localize "FQB.Editor.RemoveNotice"}}"
+                      aria-label="{{localize "FQB.Editor.RemoveNotice"}}">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </li>
+        {{/each}}
+      </ol>
+    {{/if}}
+  </fieldset>
 
 </div>

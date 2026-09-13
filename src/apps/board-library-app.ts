@@ -13,7 +13,7 @@
  */
 import { MODULE_ID, SETTINGS, TEMPLATES } from "../constants.js";
 import { emptyBoard, type Board } from "../models/board.js";
-import { artUrl, normalizeStyle, resolveStyle } from "../models/board-styles.js";
+import { artUrl, customImageOf, normalizeStyle, resolveStyle } from "../models/board-styles.js";
 import { displayed, hide, isGamemaster, show } from "../services/board-service.js";
 import { BoardStore } from "../stores/board-store.js";
 import { BoardApp } from "./board-app.js";
@@ -194,7 +194,8 @@ export class BoardLibraryApp extends HandlebarsApplicationMixin(ApplicationV2) {
  * style's swatch rule. A row should look like the board it opens.
  */
 function swatchContext(board: Board): AnyObject {
-  if (board.background) return { styleClass: "fqb-swatch--image", swatchImage: board.background };
+  const custom = customImageOf(board);
+  if (custom) return { styleClass: "fqb-swatch--image", swatchImage: custom };
   const resolved = resolveStyle(board.style);
   if (resolved?.kind === "art") {
     return { styleClass: "fqb-swatch--image", swatchImage: artUrl(resolved.board, MODULE_ID) };

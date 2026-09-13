@@ -57,7 +57,9 @@
 
 .fqb-editor__heading {
   flex: 1;
-  font-weight: bold;
+  font-size: var(--font-size-12, 12px);
+  font-style: italic;
+  opacity: 0.7;
 }
 
 .fqb-library__toolbar button,
@@ -203,6 +205,61 @@
 .fqb-swatch--tavern { background-color: #5a3f2b; background-image: linear-gradient(180deg, rgb(0 0 0 / 35%), transparent 70%); }
 .fqb-swatch--camp { background-color: #9c8a63; background-image: repeating-linear-gradient(45deg, rgb(255 255 255 / 12%) 0 3px, transparent 3px 6px); }
 .fqb-swatch--plain { background-color: #4a4a4a; }
+
+/* ----------------------------------------------------- board editor bits -- */
+
+/* The two fieldsets, Board and Notices. Foundry styles `fieldset` inside a
+   `standard-form`; this only closes up the spacing to match the fields above. */
+.fqb-editor__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 4px 0 0;
+}
+
+.fqb-editor__section > legend {
+  font-weight: bold;
+}
+
+/* Foundry's own `.tabs` / `.tab` classes do the showing and hiding — the base
+   stylesheet hides `.tab:not(.active)` and `standard-form` sets the active one
+   to flex. What is ours is only the direction, so a tab lays its fields out
+   like the rest of the form. */
+.fqb-editor__tab.active {
+  flex-direction: column;
+  gap: 8px;
+}
+
+/*
+ * The board, small: the same surface / art / pinnable structure the board
+ * renders with, at a fixed 16:9, centred. Because the real stylesheet does the
+ * work — letterboxing an illustrated board, filling with a procedural texture,
+ * covering with a custom image — this is the board rather than a thumbnail of
+ * one. `aspect-ratio` on the wrapper is what gives the surface (a size
+ * container) a definite box to measure.
+ */
+.fqb-editor__preview {
+  display: flex;
+  width: 100%;
+  max-width: 360px;
+  margin: 4px auto 0;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--color-border-light-tertiary, rgb(0 0 0 / 25%));
+  border-radius: 4px;
+}
+
+.fqb-editor__preview .fqb-board__surface {
+  /* The vignette reads as heavy at this size; the wall's own gradient is enough. */
+  box-shadow: none;
+}
+
+/* Where notices will land — the one thing worth seeing before choosing a
+   board. Only in the preview: on the board itself the panel is not a shape. */
+.fqb-editor__preview .fqb-board__pinnable {
+  outline: 1px dashed rgb(255 255 255 / 50%);
+  outline-offset: -1px;
+}
 
 /* ------------------------------------------------------- notice-editor bits -- */
 

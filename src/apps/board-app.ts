@@ -31,11 +31,10 @@ import {
   clampPosition,
   clampRotation,
   emptyNotice,
-  type Board,
   type Notice,
   type NoticeTemplate,
 } from "../models/board.js";
-import { DEFAULT_STYLE, artInlineStyle, resolveStyle } from "../models/board-styles.js";
+import { surfaceContext } from "../models/board-styles.js";
 import { displayed, hide, isGamemaster, show } from "../services/board-service.js";
 import { BoardStore } from "../stores/board-store.js";
 import { NoticeApp } from "./notice-app.js";
@@ -243,8 +242,7 @@ export class BoardApp extends HandlebarsApplicationMixin(ApplicationV2) {
       arranging: gm && this.arranging,
       name: board.name,
       subtitle: board.subtitle,
-      ...this.surfaceContext(board),
-      background: board.background,
+      ...surfaceContext(board, MODULE_ID),
       pushed: displayed()?.boardId === board.id,
       empty: visible.length === 0,
       emptyMessage: gm ? "FQB.Board.EmptyGM" : "FQB.Board.EmptyPlayer",
@@ -267,30 +265,6 @@ export class BoardApp extends HandlebarsApplicationMixin(ApplicationV2) {
         // cannot know where the GM left this one.
         style: `left:${notice.x}%; top:${notice.y}%; --fqb-rotation:${notice.rotation}deg; z-index:${index + 1};`,
       })),
-    };
-  }
-
-  /**
-   * What the surface and the art element wear for this board's style.
-   *
-   * A procedural style is a class and nothing else — its texture is a rule in
-   * module.css. An illustrated board gets the one generic `fqb-board--art`
-   * class and carries its own geometry inline: the artwork's ratio, the panel
-   * insets, and the image. That is the whole reason a hundred boards need no
-   * hundred CSS rules.
-   *
-   * With a custom background the inline geometry is withheld entirely. The
-   * `fqb-board--custom` rule resets ratio and insets so the GM's own image fills
-   * the surface, and an inline declaration would beat that rule on the cascade.
-   */
-  private surfaceContext(board: Board): AnyObject {
-    const resolved = resolveStyle(board.style) ?? resolveStyle(DEFAULT_STYLE);
-    if (!resolved || resolved.kind === "procedural") {
-      return { boardClass: `fqb-board--${resolved?.style ?? "plain"}`, artStyle: "" };
-    }
-    return {
-      boardClass: "fqb-board--art",
-      artStyle: board.background ? "" : artInlineStyle(resolved.board, MODULE_ID),
     };
   }
 

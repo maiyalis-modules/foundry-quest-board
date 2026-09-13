@@ -19,6 +19,7 @@
     custom   a board given its own background image, which resets both
     gallery  six illustrated boards at the shared default inset, notices in
              every corner — the one to look at after adding artwork
+    previews the editor's preview box: illustrated, procedural, custom
 
   Open it in any browser, or screenshot every panel headlessly:
 
@@ -31,7 +32,7 @@
           const p = await b.newPage();
           await p.setViewport({width: 1900, height: 3600});
           await p.goto("file:///app/tools/board-preview.html", {waitUntil: "networkidle0"});
-          for (const id of ["overlay","wide","narrow","proc","custom","gallery"])
+          for (const id of ["overlay","wide","narrow","proc","custom","gallery","previews"])
             await (await p.$("#"+id)).screenshot({path: "/app/tools/shot-"+id+".png"});
           await b.close();
         })();
@@ -58,6 +59,8 @@
   .narrow { width: 520px; height: 620px; }
   .gallery { display: grid; grid-template-columns: repeat(3, 600px); gap: 8px; width: 1816px; }
   .gallery-item { width: 600px; height: 400px; }
+  .previews { display: flex; gap: 16px; padding: 16px; width: 1200px; background: #2a2a30; }
+  .previews .fqb-editor__preview { margin: 0; }
 
   /* Stand-in for Foundry's #interface: the canvas area the overlay is hung in,
      with a fake map behind it and a fake sidebar beside it. */
@@ -372,6 +375,15 @@
       </div>
     </div>
   </div>
+</div>
+
+
+<!-- The editor's preview box in each of its three modes. Foundry's form CSS is
+     absent here, so only the box itself is representative. -->
+<div class="previews" id="previews">
+  <div class="fqb-editor__preview"><div class="fqb-board__surface fqb-board--art"><div class="fqb-board__art" style="--fqb-art-ratio:1.7768;--fqb-pin-top:15%;--fqb-pin-right:10.5%;--fqb-pin-bottom:18%;--fqb-pin-left:10.5%;background-image:url(../assets/boards/thieves-cant-2.webp)"><div class="fqb-board__pinnable"></div></div></div></div>
+  <div class="fqb-editor__preview"><div class="fqb-board__surface fqb-board--civic"><div class="fqb-board__art"><div class="fqb-board__pinnable"></div></div></div></div>
+  <div class="fqb-editor__preview"><div class="fqb-board__surface fqb-board--art fqb-board--custom"><div class="fqb-board__art" style="background-image:url(../assets/boards/frozen-north-1.webp)"><div class="fqb-board__pinnable"></div></div></div></div>
 </div>
 
 </body>

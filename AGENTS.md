@@ -330,6 +330,19 @@ of board it has.
   Arrange mode the whole time the editor was open, and writing the draft's stale
   coordinates would silently shove every notice back. Tilt *is* the draft's, since
   the notice editor has a slider for it.
+- **The editor's Template / Custom tabs are `Board.surface`, stored.** The active
+  tab is the mode the board renders in, not a view state beside it: `custom`
+  renders `background`, `template` renders `style`, and `customImageOf()` is the
+  one place that decision is made — the board, the library swatch and the
+  editor's preview all go through `surfaceContext()`. Explicit rather than
+  inferred from whether a path exists, so switching back to Template does not
+  throw the path away and a stale path cannot silently win. A board saved before
+  the field existed normalizes to `custom` if it had a background, so nothing
+  changes its look on upgrade.
+- **The preview under the tabs is the board, not a thumbnail.** Same
+  surface / art / pinnable markup, same `surfaceContext`, same stylesheet, at
+  16:9 inside a `max-width`. The dashed outline on the pinnable panel is
+  preview-only.
 - **Position is set by dragging, not by typing.** There is no x/y control in the
   notice editor on purpose: two number boxes for a thing you arrange by eye is
   the worse half of the same feature.

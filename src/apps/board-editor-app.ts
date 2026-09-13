@@ -15,11 +15,12 @@
  * writing the draft's (see `onSave`).
  */
 import { MODULE_ID, SETTINGS, TEMPLATES } from "../constants.js";
-import { emptyNotice, type Board, type NoticeTemplate } from "../models/board.js";
+import { SURFACES, emptyNotice, type Board, type NoticeTemplate, type Surface } from "../models/board.js";
 import {
   PROCEDURAL_STYLES,
   THEMES,
   firstStyleOf,
+  surfaceContext,
   themeLabel,
   themeOf,
   variantsOf,
@@ -110,6 +111,11 @@ export class BoardEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
       subtitle: this.draft.subtitle,
       background: this.draft.background,
       playerVisible: this.draft.playerVisible,
+      surfaceIsTemplate: this.draft.surface === SURFACES.template,
+      surfaceIsCustom: this.draft.surface === SURFACES.custom,
+      // The same resolution the board itself renders with, so the preview is
+      // the board at a small size rather than an approximation of it.
+      preview: surfaceContext(this.draft, MODULE_ID),
       ...this.styleContext(),
       notices: this.draft.notices.map((notice, index) => ({
         ...notice,
@@ -135,13 +141,21 @@ export class BoardEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
     root.addEventListener("submit", (event: Event) => event.preventDefault());
 
-    // Changing theme changes which variants exist, so the variant select has to
-    // be rebuilt — a re-render, after capturing everything else typed so far.
-    // Delegated, like the clicks, because the select is a new element on every
-    // render. Only the theme: a variant change is stored by the next capture.
+    // Any change to the surface controls re-renders: the theme decides which
+    // variants exist, and all three feed the preview. A re-render after capturing
+    // everything typed so far. Delegated, like the clicks, because every control
+    // is a new element on every render.
     root.addEventListener("change", (event: Event) => {
       const target = event.target as HTMLElement | null;
-      if (target?.matches?.("select[name='theme']")) this.refresh();
+      // `closest`, not `matches`: a path typed into the file picker fires `change`
+      // on its inner input, which is inside the custom element, not the element.
+      if (
+        target?.closest?.(
+          "select[name='theme'], select[name='variant'], file-picker[name='background']",
+        )
+      ) {
+        this.refresh();
+      }
     });
 
     root.addEventListener("click", (event: Event) => {
@@ -157,6 +171,9 @@ export class BoardEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
           return;
         case "cancel":
           void this.close();
+          return;
+        case "tab":
+          this.switchSurface(el.dataset["tab"] ?? "");
           return;
         case "add-notice":
           this.addNotice();
@@ -204,6 +221,22 @@ export class BoardEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
   private refresh(): void {
     this.capture();
+    void this.render();
+  }
+
+  /**
+   * Switch between the Template and Custom tabs.
+   *
+   * The tab *is* the surface mode, stored on the draft — not a view state kept
+   * beside it. That is what lets a GM flip to Custom, decide against it, and
+   * flip back without the path they picked being thrown away, and it is what
+   * the board renders from. Re-rendered rather than toggling classes by hand:
+   * the preview underneath has to change too.
+   */
+  private switchSurface(surface: string): void {
+    if (surface !== SURFACES.template && surface !== SURFACES.custom) return;
+    this.capture();
+    this.draft.surface = surface as Surface;
     void this.render();
   }
 

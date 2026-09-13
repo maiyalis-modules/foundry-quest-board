@@ -16,6 +16,9 @@
  * is no per-board CSS rule to forget.
  */
 import catalog from "../generated/board-catalog.json";
+// Type-only: `board.ts` imports values from here, and a value import back would
+// be a cycle. The literal below is checked against the `Surface` union anyway.
+import type { Board } from "./board.js";
 
 /** The surfaces drawn in CSS. Each is a `fqb-board--*` rule in module.css. */
 export const PROCEDURAL_STYLES = {
@@ -193,4 +196,40 @@ export function artInlineStyle(board: ArtBoard, moduleId: string): string {
     `--fqb-pin-left:${inset.left}%`,
     `background-image:url(${artUrl(board, moduleId)})`,
   ].join(";");
+}
+
+/** The GM's own image, if that is the look in use — otherwise the empty string. */
+export function customImageOf(board: Board): string {
+  return board.surface === "custom" ? board.background : "";
+}
+
+/**
+ * What the surface and the art element wear for a board. Shared by the board
+ * itself, the library's swatch and the editor's preview, so all three show
+ * the same thing.
+ *
+ * A procedural style is a class and nothing else — its texture is a rule in
+ * module.css. An illustrated board gets the one generic `fqb-board--art` class
+ * and carries its own geometry inline: the artwork's ratio, the panel insets,
+ * and the image. That is the whole reason a hundred boards need no hundred CSS
+ * rules.
+ *
+ * With the custom look in use the inline geometry is withheld entirely. The
+ * `fqb-board--custom` rule resets ratio and insets so the GM's own image fills
+ * the surface, and an inline declaration would beat that rule on the cascade.
+ */
+export function surfaceContext(
+  board: Board,
+  moduleId: string,
+): { boardClass: string; artStyle: string; background: string } {
+  const background = customImageOf(board);
+  const resolved = resolveStyle(board.style) ?? resolveStyle(DEFAULT_STYLE);
+  if (!resolved || resolved.kind === "procedural") {
+    return { boardClass: `fqb-board--${resolved?.style ?? "plain"}`, artStyle: "", background };
+  }
+  return {
+    boardClass: "fqb-board--art",
+    artStyle: background ? "" : artInlineStyle(resolved.board, moduleId),
+    background,
+  };
 }

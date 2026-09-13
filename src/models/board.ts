@@ -82,14 +82,31 @@ export interface Notice {
   hidden: boolean;
 }
 
+/**
+ * Which of a board's two looks is in use.
+ *
+ * `template` renders `style`; `custom` renders `background`. Explicit rather than
+ * inferred from whether `background` is set, so the editor's two tabs mean what
+ * they say: a GM can switch back to a template without losing the path they
+ * typed, and a path left behind cannot silently win over the template showing.
+ */
+export const SURFACES = {
+  template: "template",
+  custom: "custom",
+} as const;
+
+export type Surface = (typeof SURFACES)[keyof typeof SURFACES];
+
 export interface Board {
   id: string;
   name: string;
   /** The line on the board's header plaque. Optional. */
   subtitle: string;
+  /** Which look is in use — see {@link SURFACES}. */
+  surface: Surface;
   /** A procedural style key or an illustrated board key — see `board-styles.ts`. */
   style: string;
-  /** Optional texture behind the notices, replacing the style's own. */
+  /** The GM's own image, filling the whole surface. Used when `surface` is `custom`. */
   background: string;
   /** Whether players may open this board themselves. See `SETTINGS.playersCanBrowse`. */
   playerVisible: boolean;
@@ -186,6 +203,7 @@ export function emptyBoard(name: string, style: string = DEFAULT_STYLE): Board {
     id: foundry.utils.randomID(),
     name,
     subtitle: "",
+    surface: SURFACES.template,
     style,
     background: "",
     playerVisible: true,
@@ -209,6 +227,9 @@ export function normalizeBoard(raw: AnyObject): Board {
     subtitle: typeof raw["subtitle"] === "string" ? raw["subtitle"] : "",
     style: normalizeStyle(raw["style"]),
     background: typeof raw["background"] === "string" ? raw["background"] : "",
+    // A board from before `surface` existed used its background whenever it had
+    // one; carry that forward so nothing changes its look on upgrade.
+    surface: normalizeSurface(raw["surface"], raw["background"]),
     // Defaults to visible: a board nobody may look at is the surprising option.
     playerVisible: raw["playerVisible"] !== false,
     notices: notices.map((notice, index) => normalizeNotice(notice, index)),
@@ -244,4 +265,9 @@ function normalizeNotice(raw: AnyObject, index: number): Notice {
       typeof raw["rotation"] === "number" ? clampRotation(raw["rotation"]) : placement.rotation,
     hidden: raw["hidden"] === true,
   };
+}
+
+function normalizeSurface(raw: unknown, background: unknown): Surface {
+  if (raw === SURFACES.custom || raw === SURFACES.template) return raw;
+  return typeof background === "string" && background !== "" ? SURFACES.custom : SURFACES.template;
 }
