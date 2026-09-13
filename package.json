@@ -1,6 +1,6 @@
 {
   "name": "foundry-quest-board",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Maiyalis: Quest Board — immersive, physical-looking notice boards of parchment notices, wanted posters, rumours and jobs for FoundryVTT.",
   "type": "module",
   "private": true,
