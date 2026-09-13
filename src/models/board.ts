@@ -4,46 +4,15 @@
  *
  * Deliberately plain data — a board is JSON in a world setting, never a class.
  * Everything that renders one (`apps/board-app.ts`) reads these fields and
- * nothing else, so a new board style, notice template or pin is a value here
- * plus a CSS rule, not a code path.
+ * nothing else, so a new notice template or pin is a value here plus a CSS
+ * rule, not a code path.
+ *
+ * What a board *looks like* lives next door in `board-styles.ts`: the
+ * procedural styles drawn in CSS, and the catalog of illustrated boards
+ * generated from `assets/boards/`. `Board.style` is one string that either
+ * resolves to.
  */
-
-/**
- * The surface a board's notices are pinned to. Each becomes a `fqb-board--*`
- * class in module.css and nothing more; a board with its own `background` image
- * replaces whatever the style put behind the notices.
- *
- * Two kinds live in here, and the difference is entirely a matter of CSS:
- *
- * - **Procedural styles** are layered gradients that fill whatever space the
- *   window gives them. Notices may be pinned anywhere on the surface.
- * - **Art styles** are a bundled illustration of an actual board, letterboxed to
- *   its own aspect ratio, with a *pinnable area* — the plank panel inside the
- *   frame — that notices are positioned against instead of the whole surface. A
- *   notice at 50%/50% is in the middle of the panel, not floating over the roof.
- *
- * Both are declared the same way here, because neither is a code path: the
- * aspect ratio and the pinnable inset are CSS custom properties on the style's
- * own rule in module.css. See the "art boards" block there before adding one.
- */
-export const BOARD_STYLES = {
-  /** Art: a roofed, rope-lashed village board, mossy and long rained on. */
-  weathered1: "weathered1",
-  /** Rough planks, rope and twine — a village noticeboard by the market. */
-  rustic: "rustic",
-  /** Framed, glazed and tidy: a municipal board with official postings. */
-  civic: "civic",
-  /** Dark timber and iron, hung with bounties and contracts. */
-  guild: "guild",
-  /** A smoke-stained tavern wall of napkins and scrawled advertisements. */
-  tavern: "tavern",
-  /** Canvas and lashed poles — a caravan or camp board. */
-  camp: "camp",
-  /** No texture at all, for a board that is entirely its own background image. */
-  plain: "plain",
-} as const;
-
-export type BoardStyle = (typeof BOARD_STYLES)[keyof typeof BOARD_STYLES];
+import { DEFAULT_STYLE, normalizeStyle } from "./board-styles.js";
 
 /** What a single notice is printed on. A `fqb-notice--*` class on the notice. */
 export const NOTICE_TEMPLATES = {
@@ -118,7 +87,8 @@ export interface Board {
   name: string;
   /** The line on the board's header plaque. Optional. */
   subtitle: string;
-  style: BoardStyle;
+  /** A procedural style key or an illustrated board key — see `board-styles.ts`. */
+  style: string;
   /** Optional texture behind the notices, replacing the style's own. */
   background: string;
   /** Whether players may open this board themselves. See `SETTINGS.playersCanBrowse`. */
@@ -211,7 +181,7 @@ export function emptyNotice(
 }
 
 /** A blank board with no notices, ready for the editor. */
-export function emptyBoard(name: string, style: BoardStyle = BOARD_STYLES.rustic): Board {
+export function emptyBoard(name: string, style: string = DEFAULT_STYLE): Board {
   return {
     id: foundry.utils.randomID(),
     name,
@@ -232,13 +202,12 @@ export function emptyBoard(name: string, style: BoardStyle = BOARD_STYLES.rustic
  * every consumer can treat the shape as guaranteed.
  */
 export function normalizeBoard(raw: AnyObject): Board {
-  const styles = Object.values(BOARD_STYLES) as string[];
   const notices = Array.isArray(raw["notices"]) ? (raw["notices"] as AnyObject[]) : [];
   return {
     id: typeof raw["id"] === "string" ? raw["id"] : foundry.utils.randomID(),
     name: typeof raw["name"] === "string" ? raw["name"] : "",
     subtitle: typeof raw["subtitle"] === "string" ? raw["subtitle"] : "",
-    style: styles.includes(raw["style"]) ? (raw["style"] as BoardStyle) : BOARD_STYLES.rustic,
+    style: normalizeStyle(raw["style"]),
     background: typeof raw["background"] === "string" ? raw["background"] : "",
     // Defaults to visible: a board nobody may look at is the surprising option.
     playerVisible: raw["playerVisible"] !== false,

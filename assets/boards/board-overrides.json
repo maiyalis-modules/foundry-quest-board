@@ -1,0 +1,11 @@
+{
+  "$comment": "Read by tools/build-catalog.mjs. Insets are percentages of the artwork, measuring how far the pinnable panel sits in from each edge. defaultInset fits the generator's usual composition; add a theme or a board here only when its panel sits somewhere else. Check the result in tools/board-preview.html.",
+  "defaultInset": { "top": 15, "right": 10.5, "bottom": 18, "left": 10.5 },
+  "themes": {},
+  "boards": {
+    "weathered-board-1": {
+      "$comment": "A roofed board with rope-lashed posts eating into the panel; measured off the file at 1672x941.",
+      "inset": { "top": 21.3, "right": 17, "bottom": 24.5, "left": 17 }
+    }
+  }
+}

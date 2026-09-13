@@ -94,9 +94,13 @@
          All three collapse to the same rectangle for a procedural style, so
          there is one structure rather than two. The insets come from CSS custom
          properties on the style's own rule; see module.css. --}}
+    {{!-- `artStyle` is an illustrated board's geometry and image, inline: the
+         same custom properties a procedural style gets from a CSS rule. It is
+         empty for a procedural style, and empty when a custom background is
+         set — the two are never combined, see `surfaceContext` in the app. --}}
     <div class="fqb-board__surface {{boardClass}} {{#if background}}fqb-board--custom{{/if}}">
       <div class="fqb-board__art"
-           {{#if background}}style="background-image: url('{{background}}');"{{/if}}>
+           {{#if background}}style="background-image: url('{{background}}');"{{else}}{{#if artStyle}}style="{{artStyle}}"{{/if}}{{/if}}>
         <div class="fqb-board__pinnable">
 
       {{#if empty}}

@@ -1,0 +1,1796 @@
+{
+  "boards": [
+    {
+      "key": "adventurers-guild-1",
+      "theme": "adventurers-guild",
+      "variant": 1,
+      "file": "adventurers-guild-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "adventurers-guild-2",
+      "theme": "adventurers-guild",
+      "variant": 2,
+      "file": "adventurers-guild-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "adventurers-guild-3",
+      "theme": "adventurers-guild",
+      "variant": 3,
+      "file": "adventurers-guild-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "adventurers-guild-4",
+      "theme": "adventurers-guild",
+      "variant": 4,
+      "file": "adventurers-guild-4.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "adventurers-guild-5",
+      "theme": "adventurers-guild",
+      "variant": 5,
+      "file": "adventurers-guild-5.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "aetherpunk-1",
+      "theme": "aetherpunk",
+      "variant": 1,
+      "file": "aetherpunk-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "aetherpunk-2",
+      "theme": "aetherpunk",
+      "variant": 2,
+      "file": "aetherpunk-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "aetherpunk-3",
+      "theme": "aetherpunk",
+      "variant": 3,
+      "file": "aetherpunk-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "ancient-high-elven-1",
+      "theme": "ancient-high-elven",
+      "variant": 1,
+      "file": "ancient-high-elven-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "ancient-high-elven-2",
+      "theme": "ancient-high-elven",
+      "variant": 2,
+      "file": "ancient-high-elven-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "arcane-academy-1",
+      "theme": "arcane-academy",
+      "variant": 1,
+      "file": "arcane-academy-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "arcane-academy-2",
+      "theme": "arcane-academy",
+      "variant": 2,
+      "file": "arcane-academy-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "arcane-academy-3",
+      "theme": "arcane-academy",
+      "variant": 3,
+      "file": "arcane-academy-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "astral-planar-1",
+      "theme": "astral-planar",
+      "variant": 1,
+      "file": "astral-planar-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "astral-planar-2",
+      "theme": "astral-planar",
+      "variant": 2,
+      "file": "astral-planar-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "astral-planar-3",
+      "theme": "astral-planar",
+      "variant": 3,
+      "file": "astral-planar-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "bounty-board-1",
+      "theme": "bounty-board",
+      "variant": 1,
+      "file": "bounty-board-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "bounty-board-2",
+      "theme": "bounty-board",
+      "variant": 2,
+      "file": "bounty-board-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "bounty-board-3",
+      "theme": "bounty-board",
+      "variant": 3,
+      "file": "bounty-board-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "celestial-sanctum-1",
+      "theme": "celestial-sanctum",
+      "variant": 1,
+      "file": "celestial-sanctum-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "celestial-sanctum-2",
+      "theme": "celestial-sanctum",
+      "variant": 2,
+      "file": "celestial-sanctum-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "celestial-sanctum-3",
+      "theme": "celestial-sanctum",
+      "variant": 3,
+      "file": "celestial-sanctum-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "clockwork-precision-1",
+      "theme": "clockwork-precision",
+      "variant": 1,
+      "file": "clockwork-precision-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "clockwork-precision-2",
+      "theme": "clockwork-precision",
+      "variant": 2,
+      "file": "clockwork-precision-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "clockwork-precision-3",
+      "theme": "clockwork-precision",
+      "variant": 3,
+      "file": "clockwork-precision-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "coastal-harbour-1",
+      "theme": "coastal-harbour",
+      "variant": 1,
+      "file": "coastal-harbour-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "coastal-harbour-2",
+      "theme": "coastal-harbour",
+      "variant": 2,
+      "file": "coastal-harbour-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "cogwork-1",
+      "theme": "cogwork",
+      "variant": 1,
+      "file": "cogwork-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "cogwork-2",
+      "theme": "cogwork",
+      "variant": 2,
+      "file": "cogwork-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "cogwork-3",
+      "theme": "cogwork",
+      "variant": 3,
+      "file": "cogwork-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "darkwood-village-1",
+      "theme": "darkwood-village",
+      "variant": 1,
+      "file": "darkwood-village-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "darkwood-village-2",
+      "theme": "darkwood-village",
+      "variant": 2,
+      "file": "darkwood-village-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "darkwood-village-3",
+      "theme": "darkwood-village",
+      "variant": 3,
+      "file": "darkwood-village-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "desert-caravan-1",
+      "theme": "desert-caravan",
+      "variant": 1,
+      "file": "desert-caravan-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "desert-caravan-2",
+      "theme": "desert-caravan",
+      "variant": 2,
+      "file": "desert-caravan-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "desert-oasis-1",
+      "theme": "desert-oasis",
+      "variant": 1,
+      "file": "desert-oasis-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "desert-oasis-2",
+      "theme": "desert-oasis",
+      "variant": 2,
+      "file": "desert-oasis-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "dwarven-hold-1",
+      "theme": "dwarven-hold",
+      "variant": 1,
+      "file": "dwarven-hold-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "dwarven-hold-2",
+      "theme": "dwarven-hold",
+      "variant": 2,
+      "file": "dwarven-hold-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "elemental-conclave-1",
+      "theme": "elemental-conclave",
+      "variant": 1,
+      "file": "elemental-conclave-1.webp",
+      "width": 1672,
+      "height": 940,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "elemental-conclave-2",
+      "theme": "elemental-conclave",
+      "variant": 2,
+      "file": "elemental-conclave-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "elemental-conclave-3",
+      "theme": "elemental-conclave",
+      "variant": 3,
+      "file": "elemental-conclave-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "elemental-conclave-4",
+      "theme": "elemental-conclave",
+      "variant": 4,
+      "file": "elemental-conclave-4.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "elemental-conclave-5",
+      "theme": "elemental-conclave",
+      "variant": 5,
+      "file": "elemental-conclave-5.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "elven-woods-1",
+      "theme": "elven-woods",
+      "variant": 1,
+      "file": "elven-woods-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "elven-woods-2",
+      "theme": "elven-woods",
+      "variant": 2,
+      "file": "elven-woods-2.webp",
+      "width": 1672,
+      "height": 940,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "enchanted-crystal-1",
+      "theme": "enchanted-crystal",
+      "variant": 1,
+      "file": "enchanted-crystal-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "enchanted-crystal-2",
+      "theme": "enchanted-crystal",
+      "variant": 2,
+      "file": "enchanted-crystal-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "enchanted-crystal-3",
+      "theme": "enchanted-crystal",
+      "variant": 3,
+      "file": "enchanted-crystal-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "frozen-north-1",
+      "theme": "frozen-north",
+      "variant": 1,
+      "file": "frozen-north-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "frozen-north-2",
+      "theme": "frozen-north",
+      "variant": 2,
+      "file": "frozen-north-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "gnomish-workshop-1",
+      "theme": "gnomish-workshop",
+      "variant": 1,
+      "file": "gnomish-workshop-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "gnomish-workshop-2",
+      "theme": "gnomish-workshop",
+      "variant": 2,
+      "file": "gnomish-workshop-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "gnomish-workshop-3",
+      "theme": "gnomish-workshop",
+      "variant": 3,
+      "file": "gnomish-workshop-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "halfling-hearth-1",
+      "theme": "halfling-hearth",
+      "variant": 1,
+      "file": "halfling-hearth-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "halfling-hearth-2",
+      "theme": "halfling-hearth",
+      "variant": 2,
+      "file": "halfling-hearth-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "industrial-ironworks-1",
+      "theme": "industrial-ironworks",
+      "variant": 1,
+      "file": "industrial-ironworks-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "industrial-ironworks-2",
+      "theme": "industrial-ironworks",
+      "variant": 2,
+      "file": "industrial-ironworks-2.webp",
+      "width": 1672,
+      "height": 940,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "industrial-ironworks-3",
+      "theme": "industrial-ironworks",
+      "variant": 3,
+      "file": "industrial-ironworks-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "infernal-contracts-1",
+      "theme": "infernal-contracts",
+      "variant": 1,
+      "file": "infernal-contracts-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "infernal-contracts-2",
+      "theme": "infernal-contracts",
+      "variant": 2,
+      "file": "infernal-contracts-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "infernal-contracts-3",
+      "theme": "infernal-contracts",
+      "variant": 3,
+      "file": "infernal-contracts-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "jungle-settlement-1",
+      "theme": "jungle-settlement",
+      "variant": 1,
+      "file": "jungle-settlement-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "jungle-settlement-2",
+      "theme": "jungle-settlement",
+      "variant": 2,
+      "file": "jungle-settlement-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "kenku-treetop-1",
+      "theme": "kenku-treetop",
+      "variant": 1,
+      "file": "kenku-treetop-1.webp",
+      "width": 1672,
+      "height": 940,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "kenku-treetop-2",
+      "theme": "kenku-treetop",
+      "variant": 2,
+      "file": "kenku-treetop-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "living-fey-1",
+      "theme": "living-fey",
+      "variant": 1,
+      "file": "living-fey-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "living-fey-2",
+      "theme": "living-fey",
+      "variant": 2,
+      "file": "living-fey-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "living-fey-3",
+      "theme": "living-fey",
+      "variant": 3,
+      "file": "living-fey-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "market-town-1",
+      "theme": "market-town",
+      "variant": 1,
+      "file": "market-town-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "market-town-2",
+      "theme": "market-town",
+      "variant": 2,
+      "file": "market-town-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "market-town-3",
+      "theme": "market-town",
+      "variant": 3,
+      "file": "market-town-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "mercenary-1",
+      "theme": "mercenary",
+      "variant": 1,
+      "file": "mercenary-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "mercenary-2",
+      "theme": "mercenary",
+      "variant": 2,
+      "file": "mercenary-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "mercenary-3",
+      "theme": "mercenary",
+      "variant": 3,
+      "file": "mercenary-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "merchants-consortium-1",
+      "theme": "merchants-consortium",
+      "variant": 1,
+      "file": "merchants-consortium-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "merchants-consortium-2",
+      "theme": "merchants-consortium",
+      "variant": 2,
+      "file": "merchants-consortium-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "merchants-consortium-3",
+      "theme": "merchants-consortium",
+      "variant": 3,
+      "file": "merchants-consortium-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "monster-hunters-lodge-1",
+      "theme": "monster-hunters-lodge",
+      "variant": 1,
+      "file": "monster-hunters-lodge-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "monster-hunters-lodge-2",
+      "theme": "monster-hunters-lodge",
+      "variant": 2,
+      "file": "monster-hunters-lodge-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "monster-hunters-lodge-3",
+      "theme": "monster-hunters-lodge",
+      "variant": 3,
+      "file": "monster-hunters-lodge-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "municipal-1",
+      "theme": "municipal",
+      "variant": 1,
+      "file": "municipal-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "municipal-2",
+      "theme": "municipal",
+      "variant": 2,
+      "file": "municipal-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "municipal-3",
+      "theme": "municipal",
+      "variant": 3,
+      "file": "municipal-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "naval-port-1",
+      "theme": "naval-port",
+      "variant": 1,
+      "file": "naval-port-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "naval-port-2",
+      "theme": "naval-port",
+      "variant": 2,
+      "file": "naval-port-2.webp",
+      "width": 1672,
+      "height": 940,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "naval-port-3",
+      "theme": "naval-port",
+      "variant": 3,
+      "file": "naval-port-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "necromantic-enclave-1",
+      "theme": "necromantic-enclave",
+      "variant": 1,
+      "file": "necromantic-enclave-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "necromantic-enclave-2",
+      "theme": "necromantic-enclave",
+      "variant": 2,
+      "file": "necromantic-enclave-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "necromantic-enclave-3",
+      "theme": "necromantic-enclave",
+      "variant": 3,
+      "file": "necromantic-enclave-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "orcish-stronghold-1",
+      "theme": "orcish-stronghold",
+      "variant": 1,
+      "file": "orcish-stronghold-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "orcish-stronghold-2",
+      "theme": "orcish-stronghold",
+      "variant": 2,
+      "file": "orcish-stronghold-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "pirate-port-1",
+      "theme": "pirate-port",
+      "variant": 1,
+      "file": "pirate-port-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "pirate-port-2",
+      "theme": "pirate-port",
+      "variant": 2,
+      "file": "pirate-port-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "pirate-port-3",
+      "theme": "pirate-port",
+      "variant": 3,
+      "file": "pirate-port-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "royal-proclamations-1",
+      "theme": "royal-proclamations",
+      "variant": 1,
+      "file": "royal-proclamations-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "royal-proclamations-2",
+      "theme": "royal-proclamations",
+      "variant": 2,
+      "file": "royal-proclamations-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "royal-proclamations-3",
+      "theme": "royal-proclamations",
+      "variant": 3,
+      "file": "royal-proclamations-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "rustic-farmland-1",
+      "theme": "rustic-farmland",
+      "variant": 1,
+      "file": "rustic-farmland-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "rustic-farmland-2",
+      "theme": "rustic-farmland",
+      "variant": 2,
+      "file": "rustic-farmland-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "rustic-farmland-3",
+      "theme": "rustic-farmland",
+      "variant": 3,
+      "file": "rustic-farmland-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "scholars-collegium-1",
+      "theme": "scholars-collegium",
+      "variant": 1,
+      "file": "scholars-collegium-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "scholars-collegium-2",
+      "theme": "scholars-collegium",
+      "variant": 2,
+      "file": "scholars-collegium-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "scholars-collegium-3",
+      "theme": "scholars-collegium",
+      "variant": 3,
+      "file": "scholars-collegium-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "scrapwork-frontier-1",
+      "theme": "scrapwork-frontier",
+      "variant": 1,
+      "file": "scrapwork-frontier-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "scrapwork-frontier-2",
+      "theme": "scrapwork-frontier",
+      "variant": 2,
+      "file": "scrapwork-frontier-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "scrapwork-frontier-3",
+      "theme": "scrapwork-frontier",
+      "variant": 3,
+      "file": "scrapwork-frontier-3.webp",
+      "width": 1672,
+      "height": 940,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "swamp-settlement-1",
+      "theme": "swamp-settlement",
+      "variant": 1,
+      "file": "swamp-settlement-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "swamp-settlement-2",
+      "theme": "swamp-settlement",
+      "variant": 2,
+      "file": "swamp-settlement-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "tavern-1",
+      "theme": "tavern",
+      "variant": 1,
+      "file": "tavern-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "tavern-2",
+      "theme": "tavern",
+      "variant": 2,
+      "file": "tavern-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "tavern-3",
+      "theme": "tavern",
+      "variant": 3,
+      "file": "tavern-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "tavern-4",
+      "theme": "tavern",
+      "variant": 4,
+      "file": "tavern-4.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "tavern-5",
+      "theme": "tavern",
+      "variant": 5,
+      "file": "tavern-5.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "temple-announcements-1",
+      "theme": "temple-announcements",
+      "variant": 1,
+      "file": "temple-announcements-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "temple-announcements-2",
+      "theme": "temple-announcements",
+      "variant": 2,
+      "file": "temple-announcements-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "temple-announcements-3",
+      "theme": "temple-announcements",
+      "variant": 3,
+      "file": "temple-announcements-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "thieves-cant-1",
+      "theme": "thieves-cant",
+      "variant": 1,
+      "file": "thieves-cant-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "thieves-cant-2",
+      "theme": "thieves-cant",
+      "variant": 2,
+      "file": "thieves-cant-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "thieves-cant-3",
+      "theme": "thieves-cant",
+      "variant": 3,
+      "file": "thieves-cant-3.webp",
+      "width": 1672,
+      "height": 940,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "underdark-outpost-1",
+      "theme": "underdark-outpost",
+      "variant": 1,
+      "file": "underdark-outpost-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "underdark-outpost-2",
+      "theme": "underdark-outpost",
+      "variant": 2,
+      "file": "underdark-outpost-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "weathered-board-1",
+      "theme": "weathered-board",
+      "variant": 1,
+      "file": "weathered-board-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 21.3,
+        "right": 17,
+        "bottom": 24.5,
+        "left": 17
+      }
+    },
+    {
+      "key": "weathered-village-2",
+      "theme": "weathered-village",
+      "variant": 2,
+      "file": "weathered-village-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "weathered-village-3",
+      "theme": "weathered-village",
+      "variant": 3,
+      "file": "weathered-village-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "witchs-gathering-1",
+      "theme": "witchs-gathering",
+      "variant": 1,
+      "file": "witchs-gathering-1.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "witchs-gathering-2",
+      "theme": "witchs-gathering",
+      "variant": 2,
+      "file": "witchs-gathering-2.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    },
+    {
+      "key": "witchs-gathering-3",
+      "theme": "witchs-gathering",
+      "variant": 3,
+      "file": "witchs-gathering-3.webp",
+      "width": 1672,
+      "height": 941,
+      "inset": {
+        "top": 15,
+        "right": 10.5,
+        "bottom": 18,
+        "left": 10.5
+      }
+    }
+  ]
+}

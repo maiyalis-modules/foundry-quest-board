@@ -25,9 +25,16 @@
     <label for="fqb-default-board-style">{{localize "FQB.Settings.DefaultBoardStyleName"}}</label>
     <div class="form-fields">
       <select id="fqb-default-board-style" name="defaultBoardStyle">
-        {{#each styles}}
-          <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{localize this.label}}</option>
-        {{/each}}
+        <optgroup label="{{localize "FQB.Editor.ThemeGroupIllustrated"}}">
+          {{#each themes}}
+            <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+          {{/each}}
+        </optgroup>
+        <optgroup label="{{localize "FQB.Editor.ThemeGroupProcedural"}}">
+          {{#each proceduralStyles}}
+            <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+          {{/each}}
+        </optgroup>
       </select>
     </div>
     <p class="hint">{{localize "FQB.Settings.DefaultBoardStyleHint"}}</p>

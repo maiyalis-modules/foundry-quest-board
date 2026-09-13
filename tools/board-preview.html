@@ -4,9 +4,11 @@
 
   A static copy of what `templates/board.hbs` renders, against the real
   `styles/module.css`, so board styles can be worked on without launching
-  Foundry. It exists mainly for **measuring the pinnable insets of a new art
-  board**: put the artwork in `assets/boards/`, give it a rule in module.css,
-  point a panel here at it, and look at whether the notices land on the panel.
+  Foundry. It exists mainly for **checking the pinnable insets of illustrated
+  boards**: an illustrated board carries its geometry inline (the same
+  `--fqb-art-ratio` / `--fqb-pin-*` values the app writes from the catalog), so
+  point a panel here at a file and look at whether the notices land on the
+  panel. If they do not, the fix is an entry in `assets/boards/board-overrides.json`.
 
   Five panels, and each one catches something different:
 
@@ -15,6 +17,8 @@
     narrow   a window narrow enough that an art board letterboxes by width
     proc     a procedural style, which has no letterboxing or insets at all
     custom   a board given its own background image, which resets both
+    gallery  six illustrated boards at the shared default inset, notices in
+             every corner — the one to look at after adding artwork
 
   Open it in any browser, or screenshot every panel headlessly:
 
@@ -27,7 +31,7 @@
           const p = await b.newPage();
           await p.setViewport({width: 1900, height: 3600});
           await p.goto("file:///app/tools/board-preview.html", {waitUntil: "networkidle0"});
-          for (const id of ["overlay","wide","narrow","proc","custom"])
+          for (const id of ["overlay","wide","narrow","proc","custom","gallery"])
             await (await p.$("#"+id)).screenshot({path: "/app/tools/shot-"+id+".png"});
           await b.close();
         })();
@@ -52,6 +56,8 @@
   .fqb-board__bar button { background: #222; color: #ddd; border: 1px solid #555;
                            border-radius: 3px; height: 26px; }
   .narrow { width: 520px; height: 620px; }
+  .gallery { display: grid; grid-template-columns: repeat(3, 600px); gap: 8px; width: 1816px; }
+  .gallery-item { width: 600px; height: 400px; }
 
   /* Stand-in for Foundry's #interface: the canvas area the overlay is hung in,
      with a fake map behind it and a fake sidebar beside it. */
@@ -108,8 +114,8 @@
             <button type="button" class="fqb-board__close">X</button>
           </div>
         </header>
-        <div class="fqb-board__surface fqb-board--weathered1">
-          <div class="fqb-board__art">
+        <div class="fqb-board__surface fqb-board--art">
+          <div class="fqb-board__art" style="--fqb-art-ratio:1.7768;--fqb-pin-top:21.3%;--fqb-pin-right:17%;--fqb-pin-bottom:24.5%;--fqb-pin-left:17%;background-image:url(../assets/boards/weathered-board-1.webp)">
             <div class="fqb-board__pinnable">
               <article class="fqb-notice fqb-notice--wanted fqb-pin--nail fqb-size--medium"
                        style="left:20%; top:26%; --fqb-rotation:-4deg; z-index:1;">
@@ -167,8 +173,8 @@
           </div>
         </div>
       </header>
-      <div class="fqb-board__surface fqb-board--weathered1">
-        <div class="fqb-board__art">
+      <div class="fqb-board__surface fqb-board--art">
+        <div class="fqb-board__art" style="--fqb-art-ratio:1.7768;--fqb-pin-top:21.3%;--fqb-pin-right:17%;--fqb-pin-bottom:24.5%;--fqb-pin-left:17%;background-image:url(../assets/boards/weathered-board-1.webp)">
           <div class="fqb-board__pinnable">
 
             <article class="fqb-notice fqb-notice--wanted fqb-pin--nail fqb-size--medium"
@@ -231,8 +237,8 @@
       <header class="fqb-board__bar">
         <div class="fqb-board__titles"><span class="fqb-board__name">Narrow window</span></div>
       </header>
-      <div class="fqb-board__surface fqb-board--weathered1">
-        <div class="fqb-board__art">
+      <div class="fqb-board__surface fqb-board--art">
+        <div class="fqb-board__art" style="--fqb-art-ratio:1.7768;--fqb-pin-top:21.3%;--fqb-pin-right:17%;--fqb-pin-bottom:24.5%;--fqb-pin-left:17%;background-image:url(../assets/boards/weathered-board-1.webp)">
           <div class="fqb-board__pinnable">
             <article class="fqb-notice fqb-notice--parchment fqb-pin--pin fqb-size--medium"
                      style="left:20%; top:25%; --fqb-rotation:-4deg;">
@@ -269,10 +275,101 @@
   <div class="window-content">
     <div class="fqb-board">
       <header class="fqb-board__bar"><div class="fqb-board__titles"><span class="fqb-board__name">Custom background</span></div></header>
-      <div class="fqb-board__surface fqb-board--weathered1 fqb-board--custom"><div class="fqb-board__art" style="background-image: url(../assets/boards/weathered-board-1.webp);"><div class="fqb-board__pinnable">
+      <div class="fqb-board__surface fqb-board--art fqb-board--custom"><div class="fqb-board__art" style="background-image: url(../assets/boards/weathered-board-1.webp);"><div class="fqb-board__pinnable">
         <article class="fqb-notice fqb-notice--parchment fqb-pin--pin fqb-size--medium" style="left:20%; top:20%; --fqb-rotation:-3deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Own art</h2><p class="fqb-notice__excerpt">Fills the surface, no insets.</p></article>
         <article class="fqb-notice fqb-notice--note fqb-pin--pin fqb-size--small" style="left:80%; top:80%; --fqb-rotation:4deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Far corner</h2><p class="fqb-notice__excerpt">Reachable.</p></article>
       </div></div></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Six illustrated boards at the shared default inset, with notices parked in
+     every corner of the panel. This is the panel to look at after adding art:
+     a notice on the frame here means that board needs an override. -->
+<div class="gallery" id="gallery">
+  <div class="win gallery-item">
+    <div class="window-content">
+      <div class="fqb-board">
+        <header class="fqb-board__bar"><div class="fqb-board__titles"><span class="fqb-board__name">aetherpunk-1</span></div></header>
+        <div class="fqb-board__surface fqb-board--art"><div class="fqb-board__art" style="--fqb-art-ratio:1.7768;--fqb-pin-top:15%;--fqb-pin-right:10.5%;--fqb-pin-bottom:18%;--fqb-pin-left:10.5%;background-image:url(../assets/boards/aetherpunk-1.webp)"><div class="fqb-board__pinnable">
+          <article class="fqb-notice fqb-notice--wanted fqb-pin--nail fqb-size--medium" style="left:14%; top:20%; --fqb-rotation:-4deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Top left</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--parchment fqb-pin--pin fqb-size--medium" style="left:86%; top:20%; --fqb-rotation:3deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Top right</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--note fqb-pin--tape fqb-size--small" style="left:50%; top:50%; --fqb-rotation:-2deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Centre</h2><p class="fqb-notice__excerpt">Dead centre.</p></article>
+          <article class="fqb-notice fqb-notice--flyer fqb-pin--pin fqb-size--medium" style="left:14%; top:82%; --fqb-rotation:2deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Bottom left</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--official fqb-pin--wax fqb-size--medium" style="left:86%; top:82%; --fqb-rotation:-3deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Bottom right</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+        </div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="win gallery-item">
+    <div class="window-content">
+      <div class="fqb-board">
+        <header class="fqb-board__bar"><div class="fqb-board__titles"><span class="fqb-board__name">living-fey-2</span></div></header>
+        <div class="fqb-board__surface fqb-board--art"><div class="fqb-board__art" style="--fqb-art-ratio:1.7768;--fqb-pin-top:15%;--fqb-pin-right:10.5%;--fqb-pin-bottom:18%;--fqb-pin-left:10.5%;background-image:url(../assets/boards/living-fey-2.webp)"><div class="fqb-board__pinnable">
+          <article class="fqb-notice fqb-notice--wanted fqb-pin--nail fqb-size--medium" style="left:14%; top:20%; --fqb-rotation:-4deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Top left</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--parchment fqb-pin--pin fqb-size--medium" style="left:86%; top:20%; --fqb-rotation:3deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Top right</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--note fqb-pin--tape fqb-size--small" style="left:50%; top:50%; --fqb-rotation:-2deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Centre</h2><p class="fqb-notice__excerpt">Dead centre.</p></article>
+          <article class="fqb-notice fqb-notice--flyer fqb-pin--pin fqb-size--medium" style="left:14%; top:82%; --fqb-rotation:2deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Bottom left</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--official fqb-pin--wax fqb-size--medium" style="left:86%; top:82%; --fqb-rotation:-3deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Bottom right</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+        </div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="win gallery-item">
+    <div class="window-content">
+      <div class="fqb-board">
+        <header class="fqb-board__bar"><div class="fqb-board__titles"><span class="fqb-board__name">elemental-conclave-5</span></div></header>
+        <div class="fqb-board__surface fqb-board--art"><div class="fqb-board__art" style="--fqb-art-ratio:1.7768;--fqb-pin-top:15%;--fqb-pin-right:10.5%;--fqb-pin-bottom:18%;--fqb-pin-left:10.5%;background-image:url(../assets/boards/elemental-conclave-5.webp)"><div class="fqb-board__pinnable">
+          <article class="fqb-notice fqb-notice--wanted fqb-pin--nail fqb-size--medium" style="left:14%; top:20%; --fqb-rotation:-4deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Top left</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--parchment fqb-pin--pin fqb-size--medium" style="left:86%; top:20%; --fqb-rotation:3deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Top right</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--note fqb-pin--tape fqb-size--small" style="left:50%; top:50%; --fqb-rotation:-2deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Centre</h2><p class="fqb-notice__excerpt">Dead centre.</p></article>
+          <article class="fqb-notice fqb-notice--flyer fqb-pin--pin fqb-size--medium" style="left:14%; top:82%; --fqb-rotation:2deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Bottom left</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--official fqb-pin--wax fqb-size--medium" style="left:86%; top:82%; --fqb-rotation:-3deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Bottom right</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+        </div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="win gallery-item">
+    <div class="window-content">
+      <div class="fqb-board">
+        <header class="fqb-board__bar"><div class="fqb-board__titles"><span class="fqb-board__name">pirate-port-3</span></div></header>
+        <div class="fqb-board__surface fqb-board--art"><div class="fqb-board__art" style="--fqb-art-ratio:1.7768;--fqb-pin-top:15%;--fqb-pin-right:10.5%;--fqb-pin-bottom:18%;--fqb-pin-left:10.5%;background-image:url(../assets/boards/pirate-port-3.webp)"><div class="fqb-board__pinnable">
+          <article class="fqb-notice fqb-notice--wanted fqb-pin--nail fqb-size--medium" style="left:14%; top:20%; --fqb-rotation:-4deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Top left</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--parchment fqb-pin--pin fqb-size--medium" style="left:86%; top:20%; --fqb-rotation:3deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Top right</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--note fqb-pin--tape fqb-size--small" style="left:50%; top:50%; --fqb-rotation:-2deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Centre</h2><p class="fqb-notice__excerpt">Dead centre.</p></article>
+          <article class="fqb-notice fqb-notice--flyer fqb-pin--pin fqb-size--medium" style="left:14%; top:82%; --fqb-rotation:2deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Bottom left</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--official fqb-pin--wax fqb-size--medium" style="left:86%; top:82%; --fqb-rotation:-3deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Bottom right</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+        </div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="win gallery-item">
+    <div class="window-content">
+      <div class="fqb-board">
+        <header class="fqb-board__bar"><div class="fqb-board__titles"><span class="fqb-board__name">celestial-sanctum-1</span></div></header>
+        <div class="fqb-board__surface fqb-board--art"><div class="fqb-board__art" style="--fqb-art-ratio:1.7768;--fqb-pin-top:15%;--fqb-pin-right:10.5%;--fqb-pin-bottom:18%;--fqb-pin-left:10.5%;background-image:url(../assets/boards/celestial-sanctum-1.webp)"><div class="fqb-board__pinnable">
+          <article class="fqb-notice fqb-notice--wanted fqb-pin--nail fqb-size--medium" style="left:14%; top:20%; --fqb-rotation:-4deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Top left</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--parchment fqb-pin--pin fqb-size--medium" style="left:86%; top:20%; --fqb-rotation:3deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Top right</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--note fqb-pin--tape fqb-size--small" style="left:50%; top:50%; --fqb-rotation:-2deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Centre</h2><p class="fqb-notice__excerpt">Dead centre.</p></article>
+          <article class="fqb-notice fqb-notice--flyer fqb-pin--pin fqb-size--medium" style="left:14%; top:82%; --fqb-rotation:2deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Bottom left</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--official fqb-pin--wax fqb-size--medium" style="left:86%; top:82%; --fqb-rotation:-3deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Bottom right</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+        </div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="win gallery-item">
+    <div class="window-content">
+      <div class="fqb-board">
+        <header class="fqb-board__bar"><div class="fqb-board__titles"><span class="fqb-board__name">kenku-treetop-2</span></div></header>
+        <div class="fqb-board__surface fqb-board--art"><div class="fqb-board__art" style="--fqb-art-ratio:1.7768;--fqb-pin-top:15%;--fqb-pin-right:10.5%;--fqb-pin-bottom:18%;--fqb-pin-left:10.5%;background-image:url(../assets/boards/kenku-treetop-2.webp)"><div class="fqb-board__pinnable">
+          <article class="fqb-notice fqb-notice--wanted fqb-pin--nail fqb-size--medium" style="left:14%; top:20%; --fqb-rotation:-4deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Top left</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--parchment fqb-pin--pin fqb-size--medium" style="left:86%; top:20%; --fqb-rotation:3deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Top right</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--note fqb-pin--tape fqb-size--small" style="left:50%; top:50%; --fqb-rotation:-2deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Centre</h2><p class="fqb-notice__excerpt">Dead centre.</p></article>
+          <article class="fqb-notice fqb-notice--flyer fqb-pin--pin fqb-size--medium" style="left:14%; top:82%; --fqb-rotation:2deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Bottom left</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+          <article class="fqb-notice fqb-notice--official fqb-pin--wax fqb-size--medium" style="left:86%; top:82%; --fqb-rotation:-3deg;"><span class="fqb-notice__fastener"></span><h2 class="fqb-notice__title">Bottom right</h2><p class="fqb-notice__excerpt">Corner of the panel.</p></article>
+        </div></div></div>
+      </div>
     </div>
   </div>
 </div>

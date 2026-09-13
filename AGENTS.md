@@ -63,9 +63,13 @@ src/
   settings.ts           game.settings registration (preferences only — the two
                         content settings register from the code that owns them)
   models/
-    board.ts            Board / Notice, plus BOARD_STYLES, NOTICE_TEMPLATES,
-                        PINS, SIZES, the scatter placer and the normalizers
-                        that make a hand-edited setting safe
+    board.ts            Board / Notice, plus NOTICE_TEMPLATES, PINS, SIZES, the
+                        scatter placer and the normalizers that make a
+                        hand-edited setting safe
+    board-styles.ts     PROCEDURAL_STYLES, the illustrated catalog (THEMES,
+                        ART_BOARDS) and resolveStyle() — one string, two kinds
+  generated/
+    board-catalog.json  built from assets/boards/ by tools/build-catalog.mjs
     display.ts          the pushed board — see "Showing a board" below
   stores/
     board-store.ts      every board (a world setting): list/get/save/remove,
@@ -86,6 +90,8 @@ src/
 dist/module.js          build output (git-ignored)
 module.json             manifest — esmodules -> dist/module.js
 styles/ templates/ lang/   served from the repo root as-is
+assets/boards/          illustrated board artwork (WebP) + board-overrides.json
+tools/                  build-catalog.mjs, convert-boards.mjs, board-preview.html
 ```
 
 ## Conventions
@@ -112,11 +118,12 @@ styles/ templates/ lang/   served from the repo root as-is
 - **Localization**: every user-facing string lives in `lang/en.json` under the
   `FQB.` prefix — `game.i18n.localize("FQB.…")` in TS, `{{localize "FQB.…"}}` in
   templates. Do not hardcode display strings.
-- **A board style, a notice template and a pin are data, not code paths.** All
-  three are values in `models/board.ts` that become a CSS class
-  (`fqb-board--*`, `fqb-notice--*`, `fqb-pin--*`). Adding one is an entry in the
-  const object, a `FQB.BoardStyle.*` / `FQB.Template.*` / `FQB.Pin.*` string, and
-  a rule in module.css — never a branch in `BoardApp`.
+- **A procedural style, a notice template and a pin are data, not code paths.**
+  Each is a value in `models/` that becomes a CSS class (`fqb-board--*`,
+  `fqb-notice--*`, `fqb-pin--*`). Adding one is an entry in the const object, a
+  `FQB.BoardStyle.*` / `FQB.Template.*` / `FQB.Pin.*` string, and a rule in
+  module.css — never a branch in `BoardApp`. An **illustrated** board is less
+  than that: a file in `assets/boards/` and a build. See "Illustrated boards".
 - **Gradients first; artwork only for whole boards.** Every notice template and
   every pin is layered CSS gradients and clip-paths, and must stay that way — a
   new pin head is not worth a download. The one exception is a **board style
@@ -124,41 +131,84 @@ styles/ templates/ lang/   served from the repo root as-is
   genuinely cannot draw in CSS. Ship those as WebP; the source PNGs are
   megabytes and this is a module people install.
 
-## Art boards
+## Illustrated boards
 
-An art board is an illustration of a real board — a frame, and a panel inside it
-that notices are pinned to. It is still just a `BOARD_STYLES` value and a CSS
-rule; `BoardApp` cannot tell one from a gradient. Three boxes make that work,
-and `templates/board.hbs` documents them:
+An illustrated board is artwork of a real board — a frame, and a panel inside it
+that notices are pinned to. `Board.style` is one string either way: a procedural
+key (`"rustic"`) or an illustrated key (`"aetherpunk-2"`, which is
+`<theme>-<variant>`). `models/board-styles.ts` resolves it; nothing else cares
+which kind it is. Three boxes make the layout work, and `templates/board.hbs`
+documents them:
 
 ```
-surface   fills the window body; for an art style it is the wall behind
-art       the board; procedural fills the surface, art letterboxes to its ratio
+surface   fills the window body; for an illustrated board it is the wall behind
+art       the board; procedural fills the surface, illustrated letterboxes to its ratio
 pinnable  the panel inside the frame — notice positions are % of THIS box
 ```
 
 They collapse to the same rectangle for a procedural style, so there is one
-structure rather than two. The art style's own CSS rule supplies the lot as
-custom properties: `--fqb-art-ratio` and the four `--fqb-pin-*` insets.
-**No JavaScript measures anything.**
+structure rather than two. The geometry is four custom properties on
+`.fqb-board__art` — `--fqb-art-ratio` and the `--fqb-pin-*` insets. A procedural
+style leaves them at their defaults; an illustrated board gets them **inline,
+from its catalog entry** (`surfaceContext()` in `apps/board-app.ts`). There is
+one generic `.fqb-board--art` rule and no per-board CSS. **No JavaScript
+measures anything.**
 
 How much of the surface the board may take is a separate pair, `--fqb-fill-w` /
 `--fqb-fill-h`, defaulting to 100 each. They are **bare numbers, not lengths**,
 so both kinds of style can consume them the way each needs: a procedural board
-takes them as a percentage of the surface, an art board multiplies them by `cq`
-units to letterbox inside the same box. That is what lets the overlay set the
-geometry once — 90 / 95, anchored to the bottom — without knowing which kind of
-board it has.
+takes them as a percentage of the surface, an illustrated one multiplies them by
+`cq` units to letterbox inside the same box. That is what lets the overlay set
+the geometry once — 90 / 95, anchored to the bottom — without knowing which kind
+of board it has.
 
-- **Adding one is two CSS edits plus the const value and the string** — the
-  "art boards" block in module.css spells it out. Getting the insets right is
-  the whole job: measure the panel in the file, divide by the file's dimensions,
-  then pull each edge in slightly.
-- **`tools/board-preview.html` is how you check them** without launching
+- **The catalog is generated, never written.** `tools/build-catalog.mjs` scans
+  `assets/boards/*.webp` and emits `src/generated/board-catalog.json`; it runs
+  as the `catalog` script ahead of every `build`, `watch` and `typecheck`. The
+  output is committed so a fresh clone type-checks without running anything,
+  and regenerated on every build so it cannot drift from the folder for longer
+  than one build. Nothing in `src/` or `styles/` lists a board. **Adding one is
+  dropping `<theme>-<n>.webp` into the folder and building.** A file with no
+  trailing number is variant 1 of a theme named after its stem. The script is
+  plain Node — it reads WebP dimensions from the container header — so it needs
+  no native dependency and runs in the build container as-is.
+- **Sources are PNG, shipped is WebP.** The generator produces ~2.2 MB PNGs; at
+  quality 76 the WebP is ~220 KB and indistinguishable at board size. 128 boards
+  is 28 MB shipped rather than 280. `tools/convert-boards.mjs` does it (needs
+  `sharp`, hence
+  `docker compose run --rm build sh -lc "npm i --no-save sharp && node tools/convert-boards.mjs"`),
+  is idempotent, and never deletes a PNG — those are the artist's originals.
+  `assets/boards/*.png` is gitignored.
+- **Insets come from `assets/boards/board-overrides.json`, most specific wins:**
+  `boards["<key>"]` > `themes["<theme>"]` > `defaultInset`. The default
+  (top 15, right 10.5, bottom 18, left 10.5) fits the generator's usual
+  composition — a rectangular panel with posts either side and an ornament on
+  top — and was checked across a spread of 16 themes. An override is for a board
+  whose panel is somewhere else: `weathered-board-1`, with its roof and
+  rope-lashed posts, is the one so far. The builder warns about an override that
+  matches no file.
+- **Theme names are `FQB.Theme.<slug>` strings**, one per shipped theme, and
+  `themeLabel()` falls back to the slug in title case for a theme added before
+  anyone adds its string. Labels are resolved in `_prepareContext`, not with
+  `{{localize}}`, because of that fallback.
+- **The editor shows two selects for the one field.** Theme (illustrated themes
+  and procedural styles, in two `<optgroup>`s), then Variant, which only appears
+  when the theme has more than one. `styleFromControls()` reads them back into
+  the string and **only trusts the variant select if it belongs to the selected
+  theme** — when the theme changes, the variant select still lists the old
+  theme's variants until the re-render. The default-style setting is a select
+  over themes storing the theme's *first* variant; a flat list of every variant
+  would be a hundred-odd entries long.
+- **`weathered1` is an alias.** The first illustrated board was hard-coded
+  under that key before the catalog existed; `normalizeStyle()` maps it to
+  `weathered-board-1`. Any key nothing answers to normalizes to
+  `DEFAULT_STYLE` rather than to a procedural style — "my board came back as the
+  default board" beats "my board came back as plain planks".
+- **`tools/board-preview.html` is how you check insets** without launching
   Foundry — a static copy of the board markup against the real stylesheet, with
-  a headless-screenshot one-liner in its header comment. It renders the wide,
-  narrow, procedural and custom-background cases side by side, which is exactly
-  the set that catches a bad inset.
+  a headless-screenshot one-liner in its header comment. Its `gallery` panel
+  renders six themes at the shared default with notices parked in every corner
+  of the panel; a notice on the frame there means that board needs an override.
 - **Notices scale with the board, not with the window.** They are sized in
   `cqw` against `.fqb-board__pinnable` (clamped at both ends), because the board
   is a picture you step closer to — a notice fixed at 185px while the board
@@ -167,12 +217,13 @@ board it has.
   containing block, so it scaled with the panel and left a small notice as
   almost pure margin.
 - **A custom `background` image wins over all of it.** `fqb-board--custom` on
-  the surface resets the ratio and the insets, so a GM's own art fills the
-  surface edge to edge and the whole thing is pinnable again. It must stay last
-  among those rules — same specificity, source order decides.
+  the surface resets the ratio and the insets so a GM's own art fills the
+  surface edge to edge — and `surfaceContext()` withholds the inline geometry
+  when a background is set, because an inline declaration would beat that rule
+  regardless of source order. The rule must still come after `.fqb-board--art`.
 - **Positions survive a style change.** They are percentages of the pinnable
-  box, so switching a board from gradient to art keeps the arrangement and just
-  confines it to the panel. There is no migration to write.
+  box, so switching a board from one theme to another, or to a gradient, keeps
+  the arrangement and just re-confines it. There is no migration to write.
 
 ## Showing a board
 

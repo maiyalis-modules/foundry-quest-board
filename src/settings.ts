@@ -14,7 +14,8 @@
  */
 import { QuestBoardConfig } from "./apps/quest-board-config.js";
 import { MENUS, MODULE_ID, SETTINGS } from "./constants.js";
-import { BOARD_STYLES, NOTICE_TEMPLATES } from "./models/board.js";
+import { NOTICE_TEMPLATES } from "./models/board.js";
+import { DEFAULT_STYLE, PROCEDURAL_STYLES, THEMES, firstStyleOf, themeLabelKey } from "./models/board-styles.js";
 
 export function registerSettings(): void {
   // Shows/hides the Journal-sidebar launch button (see module.ts).
@@ -41,16 +42,22 @@ export function registerSettings(): void {
 
   // What a newly created board starts as. World-scoped rather than client:
   // it shapes content the whole table will look at, and only GMs author boards.
+  //
+  // The choice is a *theme* — a procedural style, or an illustrated theme whose
+  // first variant is what gets stored. A flat list of every variant would be a
+  // hundred-odd entries long, and "which of the three aetherpunk boards is the
+  // default" is not a decision worth a setting.
   game.settings.register(MODULE_ID, SETTINGS.defaultBoardStyle, {
     name: "FQB.Settings.DefaultBoardStyleName",
     hint: "FQB.Settings.DefaultBoardStyleHint",
     scope: "world",
     config: false,
     type: String,
-    choices: Object.fromEntries(
-      Object.values(BOARD_STYLES).map((style) => [style, `FQB.BoardStyle.${style}`]),
-    ),
-    default: BOARD_STYLES.weathered1,
+    choices: Object.fromEntries([
+      ...Object.values(PROCEDURAL_STYLES).map((style) => [style, themeLabelKey(style)]),
+      ...THEMES.map((theme) => [firstStyleOf(theme.key), themeLabelKey(theme.key)]),
+    ]),
+    default: DEFAULT_STYLE,
   });
 
   // What a newly pinned notice is printed on.

@@ -12,7 +12,8 @@
  * the settings page would put it three clicks away from the table.
  */
 import { MODULE_ID, SETTINGS, TEMPLATES } from "../constants.js";
-import { emptyBoard, type Board, type BoardStyle } from "../models/board.js";
+import { emptyBoard, type Board } from "../models/board.js";
+import { artUrl, normalizeStyle, resolveStyle } from "../models/board-styles.js";
 import { displayed, hide, isGamemaster, show } from "../services/board-service.js";
 import { BoardStore } from "../stores/board-store.js";
 import { BoardApp } from "./board-app.js";
@@ -53,8 +54,7 @@ export class BoardLibraryApp extends HandlebarsApplicationMixin(ApplicationV2) {
         id: board.id,
         name: board.name,
         subtitle: board.subtitle,
-        styleClass: `fqb-swatch--${board.style}`,
-        background: board.background,
+        ...swatchContext(board),
         // Players are told how many notices they can see, not how many exist —
         // a count that jumps when the GM reveals one is a spoiler by itself.
         count: game.i18n.format("FQB.Library.NoticeCount", {
@@ -112,8 +112,10 @@ export class BoardLibraryApp extends HandlebarsApplicationMixin(ApplicationV2) {
     });
   }
 
-  private defaultStyle(): BoardStyle {
-    return game.settings.get(MODULE_ID, SETTINGS.defaultBoardStyle) as BoardStyle;
+  private defaultStyle(): string {
+    // Normalized rather than trusted: the setting may hold a key from before a
+    // board file was renamed or removed, and a new board should still open.
+    return normalizeStyle(game.settings.get(MODULE_ID, SETTINGS.defaultBoardStyle));
   }
 
   private openEditor(board: Board): void {
@@ -184,4 +186,18 @@ export class BoardLibraryApp extends HandlebarsApplicationMixin(ApplicationV2) {
     // showing a different one, and the board opens as its own window anyway.
     void this.render();
   }
+}
+
+/**
+ * What a board's swatch in the list shows: the GM's own background image if it
+ * has one, otherwise the illustrated board's artwork, otherwise the procedural
+ * style's swatch rule. A row should look like the board it opens.
+ */
+function swatchContext(board: Board): AnyObject {
+  if (board.background) return { styleClass: "fqb-swatch--image", swatchImage: board.background };
+  const resolved = resolveStyle(board.style);
+  if (resolved?.kind === "art") {
+    return { styleClass: "fqb-swatch--image", swatchImage: artUrl(resolved.board, MODULE_ID) };
+  }
+  return { styleClass: `fqb-swatch--${resolved?.style ?? "plain"}`, swatchImage: "" };
 }

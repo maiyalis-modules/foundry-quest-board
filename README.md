@@ -14,10 +14,11 @@ System-agnostic — it touches no system data at all.
   Crossing Job Board, the Adventurers' Guild, the Bent Feather, the Valtiron
   Bounty Office — each with its own notices, opened when the party is standing in
   front of it.
-- **Boards that look like the place they are in.** An illustrated *Weathered
-  Board* whose notices hang on the planks inside its frame, five drawn-in-CSS
-  surfaces (rustic planks, a glazed civic frame, a dark guild wall, a
-  smoke-stained tavern, camp canvas), or your own image filling the whole board.
+- **Boards that look like the place they are in.** 128 illustrated boards across
+  46 themes — Adventurers' Guild, Aetherpunk, Thieves' Cant, Kenku Treetop,
+  Necromantic Enclave, Halfling Hearth, and on — most in two or three looks, with
+  notices hanging on the panel inside the frame. Or five drawn-in-CSS surfaces,
+  or your own image filling the whole board.
 - **Notices on real stock.** Parchment, wanted poster, torn note, printed flyer,
   official posting, napkin scrawl — each with an optional image, a reward and a
   "posted by", held up with a pin, a nail, a strip of tape or a wax seal.
@@ -44,8 +45,8 @@ live under *Settings → Configure Settings → Quest Board*.
 
 Building a board:
 
-1. **New Board** — name it, pick a style, optionally give it your own background
-   image, and decide whether players may open it themselves.
+1. **New Board** — name it, pick a theme and a variant, optionally give it your
+   own background image, and decide whether players may open it themselves.
 2. **Pin Notice** — title, text, image, reward, who posted it, and what it's
    printed on. Drop a journal entry onto the **Linked entry** field to connect it.
 3. Save, and the board opens. Hit **Arrange** and drag the notices where you want
@@ -145,9 +146,10 @@ foundry-quest-board/
   dist/module.js         # build output (git-ignored)
   styles/module.css      # stylesheet — every board style and notice template
   templates/             # Handlebars templates
-  assets/boards/         # artwork for the illustrated board styles (WebP)
+  assets/boards/         # illustrated board artwork (WebP) + board-overrides.json
+  src/generated/         # board-catalog.json, built from assets/boards/ on every build
   lang/en.json           # localization strings
-  tools/                 # board-preview.html — a styling harness, not shipped
+  tools/                 # build-catalog.mjs, convert-boards.mjs, board-preview.html
   docker-compose.yml     # containerized build toolchain
 ```
 
@@ -156,3 +158,21 @@ foundry-quest-board/
 All user-facing strings live in [lang/en.json](lang/en.json) under the `FQB.`
 prefix. Reference them with `game.i18n.localize()` in scripts or `{{localize}}`
 in templates.
+
+## Adding board artwork
+
+Drop `<theme>-<n>.png` files into `assets/boards/` — `aetherpunk-1.png`,
+`aetherpunk-2.png` — then convert and build:
+
+```
+docker compose run --rm build sh -lc "npm i --no-save sharp && node tools/convert-boards.mjs"
+docker compose run --rm build
+```
+
+The first turns each PNG into a ~220 KB WebP beside it (the PNGs stay put, and
+are gitignored); the second regenerates the catalog and the boards appear in the
+editor under their theme. Give the theme a proper name with a
+`FQB.Theme.<theme>` string in `lang/en.json`, or it shows as its slug in title
+case. If a board's panel is not where the shared default expects, set its inset
+in `assets/boards/board-overrides.json` and check it in
+`tools/board-preview.html`.

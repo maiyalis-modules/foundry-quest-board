@@ -6,10 +6,11 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "tsc --noEmit && vite build",
-    "watch": "vite build --watch",
-    "dev": "vite build --watch",
-    "typecheck": "tsc --noEmit",
+    "catalog": "node tools/build-catalog.mjs",
+    "build": "npm run catalog && tsc --noEmit && vite build",
+    "watch": "npm run catalog && vite build --watch",
+    "dev": "npm run catalog && vite build --watch",
+    "typecheck": "npm run catalog && tsc --noEmit",
     "clean": "rimraf dist"
   },
   "devDependencies": {

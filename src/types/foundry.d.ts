@@ -49,6 +49,8 @@ declare global {
     i18n: {
       localize(key: string): string;
       format(key: string, data?: AnyObject): string;
+      /** Whether a translation key exists in the loaded language. */
+      has(key: string): boolean;
     };
   } & AnyObject;
 

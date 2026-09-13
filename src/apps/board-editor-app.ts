@@ -15,13 +15,15 @@
  * writing the draft's (see `onSave`).
  */
 import { MODULE_ID, SETTINGS, TEMPLATES } from "../constants.js";
+import { emptyNotice, type Board, type NoticeTemplate } from "../models/board.js";
 import {
-  BOARD_STYLES,
-  emptyNotice,
-  type Board,
-  type BoardStyle,
-  type NoticeTemplate,
-} from "../models/board.js";
+  PROCEDURAL_STYLES,
+  THEMES,
+  firstStyleOf,
+  themeLabel,
+  themeOf,
+  variantsOf,
+} from "../models/board-styles.js";
 import { BoardStore } from "../stores/board-store.js";
 import { BoardApp } from "./board-app.js";
 import { NoticeEditorApp } from "./notice-editor-app.js";
@@ -108,11 +110,7 @@ export class BoardEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
       subtitle: this.draft.subtitle,
       background: this.draft.background,
       playerVisible: this.draft.playerVisible,
-      styles: Object.values(BOARD_STYLES).map((value) => ({
-        value,
-        label: `FQB.BoardStyle.${value}`,
-        selected: value === this.draft.style,
-      })),
+      ...this.styleContext(),
       notices: this.draft.notices.map((notice, index) => ({
         ...notice,
         number: index + 1,
@@ -136,6 +134,15 @@ export class BoardEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
     root.dataset["fqbBound"] = "1";
 
     root.addEventListener("submit", (event: Event) => event.preventDefault());
+
+    // Changing theme changes which variants exist, so the variant select has to
+    // be rebuilt — a re-render, after capturing everything else typed so far.
+    // Delegated, like the clicks, because the select is a new element on every
+    // render. Only the theme: a variant change is stored by the next capture.
+    root.addEventListener("change", (event: Event) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.matches?.("select[name='theme']")) this.refresh();
+    });
 
     root.addEventListener("click", (event: Event) => {
       const el = (event.target as HTMLElement | null)?.closest?.(
@@ -188,7 +195,7 @@ export class BoardEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
     this.draft.name = value("input[name='name']");
     this.draft.subtitle = value("input[name='subtitle']");
-    this.draft.style = value("select[name='style']") as BoardStyle;
+    this.draft.style = this.styleFromControls(root);
     this.draft.background =
       root.querySelector<FilePickerElement>("file-picker[name='background']")?.value ?? "";
     this.draft.playerVisible =
@@ -198,6 +205,57 @@ export class BoardEditorApp extends HandlebarsApplicationMixin(ApplicationV2) {
   private refresh(): void {
     this.capture();
     void this.render();
+  }
+
+  /**
+   * The style controls: a theme, and — for an illustrated theme with more than
+   * one variant — which variant.
+   *
+   * `Board.style` is one string; the two selects are a way of choosing it, not
+   * two fields. So the theme select's value is a theme key, the variant select's
+   * value is a full style key, and {@link styleFromControls} reads them back
+   * into the one string. Labels are resolved here because a theme's name may
+   * fall back to its slug (see `themeLabel`), which `{{localize}}` cannot do.
+   */
+  private styleContext(): AnyObject {
+    const theme = themeOf(this.draft.style);
+    const variants = variantsOf(theme);
+    return {
+      proceduralStyles: Object.values(PROCEDURAL_STYLES).map((value) => ({
+        value,
+        label: themeLabel(value),
+        selected: value === theme,
+      })),
+      themes: THEMES.map((entry) => ({
+        value: entry.key,
+        label: themeLabel(entry.key),
+        selected: entry.key === theme,
+      })),
+      // A single variant is not a choice; the select only appears for two or more.
+      hasVariants: variants.length > 1,
+      variants: variants.map((board) => ({
+        value: board.key,
+        label: game.i18n.format("FQB.Editor.VariantOption", { number: board.variant }),
+        selected: board.key === this.draft.style,
+      })),
+    };
+  }
+
+  /**
+   * The style the two selects currently describe.
+   *
+   * The variant select is only trusted if it belongs to the selected theme.
+   * When the GM changes theme, the variant select still lists the *old* theme's
+   * variants until the re-render, and reading it would store an aetherpunk
+   * board under a tavern theme. A mismatch means "first variant of the new
+   * theme", which is what a fresh theme choice should land on anyway.
+   */
+  private styleFromControls(root: HTMLElement): string {
+    const theme = root.querySelector<HTMLSelectElement>("select[name='theme']")?.value ?? "";
+    const variant = root.querySelector<HTMLSelectElement>("select[name='variant']")?.value ?? "";
+    if (!theme) return this.draft.style;
+    if (variant && themeOf(variant) === theme) return variant;
+    return firstStyleOf(theme);
   }
 
   private defaultTemplate(): NoticeTemplate {

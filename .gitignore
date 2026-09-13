@@ -17,3 +17,7 @@ Thumbs.db
 
 # Screenshots from tools/board-preview.html
 tools/shot-*.png
+
+# Board artwork sources. tools/convert-boards.mjs turns these into the WebPs
+# that ship; the PNGs are ~2 MB each and never leave the machine they were made on.
+assets/boards/*.png

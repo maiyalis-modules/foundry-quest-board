@@ -14,12 +14,13 @@
  * this file. Adding a new one should never mean touching a `.ts`.
  *
  * Board styles come in two kinds. **Procedural** ones are layered CSS gradients
- * — no download, and they fill whatever space the window gives them. **Art**
- * ones are a bundled illustration in `assets/boards/`, letterboxed to their own
- * aspect ratio with the notices confined to the panel inside the frame; see the
- * "art boards" block for how to add one. Everything else here — every notice
- * template, every pin — is gradients and clip-paths, and should stay that way:
- * a new pin head is not worth a download.
+ * — no download, and they fill whatever space the window gives them.
+ * **Illustrated** ones are artwork in `assets/boards/`, letterboxed to their own
+ * aspect ratio with the notices confined to the panel inside the frame; one
+ * rule serves all of them, with each board's geometry applied inline from the
+ * generated catalog — see the "illustrated boards" block. Everything else here
+ * — every notice template, every pin — is gradients and clip-paths, and should
+ * stay that way: a new pin head is not worth a download.
  *
  * Foundry live-applies changes to this file with no page refresh, so it is the
  * fastest thing in the module to iterate on.
@@ -188,9 +189,10 @@
 /* Board-style swatches in the library: the same gradients as the boards
    themselves, shrunk — and for an art board, the artwork itself. A row should
    look like the board it opens. */
-.fqb-swatch--weathered1 {
+/* An illustrated board, or a custom background: the image comes inline from
+   the library (`swatchContext`), zoomed past the posts to the panel. */
+.fqb-swatch--image {
   background-color: #16120f;
-  background-image: url("../assets/boards/weathered-board-1.webp");
   background-size: 132%;
   background-position: center 42%;
 }
@@ -604,32 +606,26 @@
   pointer-events: none;
 }
 
-/* ------------------------------------------------------------- art boards -- */
+/* ------------------------------------------------------ illustrated boards -- */
 
 /*
  * A bundled illustration of an actual board, letterboxed inside the surface with
  * its notices confined to the panel inside its frame.
  *
- * ADDING ONE is two edits, both here:
- *   1. Put the file in `assets/boards/` (WebP — the source PNGs are several MB
- *      and this is a module people download).
- *   2. Add its class to the shared selector list below, then give it a rule with
- *      its image, its `--fqb-art-ratio` (width ÷ height of the file), and its
- *      four `--fqb-pin-*` insets — where the pinnable panel sits inside the
- *      artwork, measured off the file as a percentage.
- * …plus the value in `BOARD_STYLES` and the `FQB.BoardStyle.*` string. There is
- * no TypeScript to write: `BoardApp` never knows an art board from a gradient.
+ * There is one rule here for all of them. Which image, the artwork's ratio and
+ * where its panel sits are **per-board data, applied inline** — `BoardApp`
+ * writes `--fqb-art-ratio`, the four `--fqb-pin-*` insets and the
+ * `background-image` onto `.fqb-board__art` straight from the catalog entry
+ * (`src/generated/board-catalog.json`, built from `assets/boards/`). A hundred
+ * boards would otherwise be a hundred rules to keep in step with a folder.
  *
- * Getting the insets right is the whole job. Too tight and the panel wastes
- * space; too loose and notices land on the roof. Measure the panel in pixels,
- * divide by the file's dimensions, and pull each edge in a little further —
- * notices are positioned by their centre and are meant to overhang the frame
- * slightly (see POSITION_BOUNDS in src/models/board.ts).
+ * ADDING ONE is therefore not a CSS job at all: drop `<theme>-<n>.webp` into
+ * `assets/boards/` and build. If its panel is not where the shared default
+ * expects, give it an inset in `assets/boards/board-overrides.json` and check
+ * it in tools/board-preview.html.
  */
 
-/* Shared by every art board — ADD A NEW ONE TO BOTH OF THESE SELECTOR LISTS. */
-
-.fqb-board--weathered1 {
+.fqb-board--art {
   /* The wall behind the board. Every one of these illustrations is a cut-out
      with real transparency around it, so something has to be back there or the
      window's own background shows through. */
@@ -638,7 +634,7 @@
     #14110e;
 }
 
-.fqb-board--weathered1 .fqb-board__art {
+.fqb-board--art .fqb-board__art {
   /* Letterbox to the artwork: as wide as its share of the surface allows, or as
      wide as its share of the surface's height permits at this ratio — whichever
      is smaller. The shares are `--fqb-fill-*`, which the overlay presentation
@@ -654,22 +650,11 @@
   filter: drop-shadow(0 6px 14px rgb(0 0 0 / 70%));
 }
 
-/* Per-board: the file, its ratio, and where its panel sits inside it. */
-
-.fqb-board--weathered1 .fqb-board__art {
-  /* weathered-board-1.webp is 1672 × 941. */
-  --fqb-art-ratio: 1.7768;
-  /* Panel: x 285-1390, y 200-710 of those dimensions. */
-  --fqb-pin-top: 21.3%;
-  --fqb-pin-right: 17%;
-  --fqb-pin-bottom: 24.5%;
-  --fqb-pin-left: 17%;
-  background-image: url("../assets/boards/weathered-board-1.webp");
-}
-
 /* A board given its own background image is that image, edge to edge: no
    letterboxing to somebody else's artwork, and the whole surface is pinnable
-   again. Must come after the art rules — same specificity, source order wins. */
+   again. Must come after the art rule — same specificity, source order wins —
+   and `BoardApp` withholds the inline geometry when a background is set, since
+   an inline declaration would beat this rule regardless of order. */
 .fqb-board--custom .fqb-board__art {
   width: calc(var(--fqb-fill-w) * 1%);
   height: calc(var(--fqb-fill-h) * 1%);

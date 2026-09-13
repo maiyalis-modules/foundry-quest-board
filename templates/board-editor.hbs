@@ -23,17 +23,44 @@
     <p class="hint">{{localize "FQB.Editor.SubtitleHint"}}</p>
   </div>
 
+  {{!-- Two selects for one field. `Board.style` is a single string; the theme
+       select narrows it and the variant select — only shown for an illustrated
+       theme with more than one — picks within it. apps/board-editor-app.ts
+       reads the pair back into the string (`styleFromControls`). Labels are
+       already localized in the context, since a theme's name can fall back
+       to its slug. --}}
   <div class="form-group">
-    <label for="fqb-board-style">{{localize "FQB.Editor.StyleLabel"}}</label>
+    <label for="fqb-board-theme">{{localize "FQB.Editor.StyleLabel"}}</label>
     <div class="form-fields">
-      <select id="fqb-board-style" name="style">
-        {{#each styles}}
-          <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{localize this.label}}</option>
-        {{/each}}
+      <select id="fqb-board-theme" name="theme">
+        <optgroup label="{{localize "FQB.Editor.ThemeGroupIllustrated"}}">
+          {{#each themes}}
+            <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+          {{/each}}
+        </optgroup>
+        <optgroup label="{{localize "FQB.Editor.ThemeGroupProcedural"}}">
+          {{#each proceduralStyles}}
+            <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+          {{/each}}
+        </optgroup>
       </select>
     </div>
     <p class="hint">{{localize "FQB.Editor.StyleHint"}}</p>
   </div>
+
+  {{#if hasVariants}}
+    <div class="form-group">
+      <label for="fqb-board-variant">{{localize "FQB.Editor.VariantLabel"}}</label>
+      <div class="form-fields">
+        <select id="fqb-board-variant" name="variant">
+          {{#each variants}}
+            <option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <p class="hint">{{localize "FQB.Editor.VariantHint"}}</p>
+    </div>
+  {{/if}}
 
   <div class="form-group">
     <label for="fqb-board-background">{{localize "FQB.Editor.BackgroundLabel"}}</label>
